@@ -1,0 +1,7 @@
+.button_container a {
+    border: 1px solid #000000;
+    color: #000000;
+    display: inline;
+    padding: 0 1em;
+    text-decoration: none;
+}
