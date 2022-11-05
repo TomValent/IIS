@@ -33,7 +33,8 @@
             <label for="login">Login</label></br>
             <input class="input" type="text" id="login" name="login"><br><br>
             <label for="pass">Password</label></br>
-            <input class="input" type="text" id="pass" name="pass"><br><br>
+            <input class="input" type="password" id="pass" name="pass"><br><br>
             <input class="button" type="submit" value="Submit">
+            <button><a href="login.php">Log in</a></button>
         </form>
     </body>

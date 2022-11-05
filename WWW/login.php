@@ -17,7 +17,7 @@
                         'password' => $_POST['pass']
                     ];
 
-                    $sql = "INSERT INTO Member VALUES (default, :username, :login, :password, 0)";
+                    $sql = "INSERT INTO Member VALUES (default, :login, :password, 0)";
                     $stmt= $pdo->prepare($sql);
                     $stmt->execute($data);
                 } catch(PDOException $e) {
@@ -30,7 +30,8 @@
             <label for="login">Login</label></br>
             <input class="input" type="text" id="login" name="login"><br><br>
             <label for="pass">Password</label></br>
-            <input class="input" type="text" id="pass" name="pass"><br><br>
+            <input class="input" type="password" id="pass" name="pass"><br><br>
             <input class="button" type="submit" value="Submit">
+            <button><a href="register.php">Register</a></button>
         </form>
     </body>

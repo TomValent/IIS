@@ -13,6 +13,11 @@ button {
     margin-right: 5px;
 }
 
+button a {
+    text-decoration: none;
+    color: black;
+}
+
 .button_container a {
     display: inline;
     padding: 0 1em;
@@ -36,8 +41,8 @@ h1 {
 }
 
 .form {
-    width: 30%;
-    height: 40%;
+    width: 20%;
+    height: 50%;
     margin: auto;
     margin-top: 10%;
     text-align: center;
@@ -50,4 +55,5 @@ h1 {
 .input {
     border-radius: 10px;
     box-shadow: 1px 2px;
+    padding: 5px;
 }
