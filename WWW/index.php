@@ -1,31 +1,41 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<div class="button_container">
-    <a href="register.php">Register</a>
-</div>
+    <head>
+        <link rel="stylesheet" href="CSS/styles.css">
+    </head>
+    <body>
+        <div id="welcome">
+            <h1>Welcome in our page</h1> <!-- TODO  -->
+        </div>
+        <div class="authenticate">
+            <p>Are you registered?</p>
+            <div class="button_container">
+                <button><a href="login.php">Log in</a></button>
+            </div>
+            <p>Are you new here?</p>
+            <div class="button_container">
+                <button><a href="register.php">Create new account</a></button>
+                <button><a href="../IIS-project/src/page.php">Continue as host</a></button>
+            </div>
+        </div>
 
-<?php
-require '../IIS-project/src/database.php';
+        <?php
+            require '../IIS-project/src/database.php';
 
-try {
+            try {
+                $pdo = createDB();
 
-    $pdo = createDB();
+                $q = $pdo->query('SELECT * FROM Member');
+                $data = $q->fetchAll(PDO::FETCH_ASSOC);
+//                foreach($data as $row) {
+//                    echo "u: " . $row['Name'] . "<br>";
+//                }
 
-    $q = $pdo->query('SELECT * FROM Member');
-    $data = $q->fetchAll(PDO::FETCH_ASSOC);
-    foreach($data as $row) {
-        echo "u: " . $row['Name'] . "<br>";
-    }
+            } catch (PDOException $e) {
+                echo "Connection error: ".$e->getMessage();
+                exit;
+            }
 
-} catch (PDOException $e) {
-    echo "Connection error: ".$e->getMessage();
-    die();
-}
-
-?>
-</body>
+        ?>
+    </body>
 </html>
