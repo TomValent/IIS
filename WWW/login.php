@@ -12,14 +12,22 @@
                 try {
                     $pdo = createDB();
 
-                    $data = [
-                        'login' => $_POST['login'],
-                        'password' => $_POST['pass']
-                    ];
+                    $sql = "SELECT login, password FROM Member";
+                    $data = $pdo->query($sql)->fetchAll();
 
-                    $sql = "INSERT INTO Member VALUES (default, :login, :password, 0)";
-                    $stmt= $pdo->prepare($sql);
-                    $stmt->execute($data);
+                    foreach ($data as $user) {
+                        if (isset($_POST["login"]) && isset($_POST["pass"])) {
+							if ($user["login"] === $_POST["login"]) {
+                                if ($user["password"] === $_POST["pass"]) {
+                                    var_dump("Logged in");
+                                } else {
+                                    var_dump("Wrong password");
+                                    break;
+                                }
+							}
+						}
+                    }
+
                 } catch(PDOException $e) {
                     echo $e->getMessage();
                 }
@@ -31,7 +39,7 @@
             <input class="input" type="text" id="login" name="login"><br><br>
             <label for="pass">Password</label></br>
             <input class="input" type="password" id="pass" name="pass"><br><br>
-            <input class="button" type="submit" value="Submit">
+            <input class="button" href="login.php" type="submit" value="Submit">
             <button><a href="register.php">Register</a></button>
         </form>
     </body>
