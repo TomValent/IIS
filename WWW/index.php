@@ -15,7 +15,7 @@
             <p>Are you new here?</p>
             <div class="button_container">
                 <button><a href="register.php">Create new account</a></button>
-                <button><a href="../IIS-project/src/page.php">Continue as host</a></button>
+                <button><a href="page.php">Continue as host</a></button>
             </div>
         </div>
 

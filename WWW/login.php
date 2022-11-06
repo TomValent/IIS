@@ -4,6 +4,9 @@
         <link rel="stylesheet" href="CSS/styles.css">
     </head>
     <body>
+        <div class="return">
+            <button><a href="index.php">Go back</a></button>
+        </div>
         <?php
             require '../IIS-project/src/database.php';
 
@@ -15,13 +18,15 @@
                     $sql = "SELECT login, password FROM Member";
                     $data = $pdo->query($sql)->fetchAll();
 
+                    session_start();
                     foreach ($data as $user) {
                         if (isset($_POST["login"]) && isset($_POST["pass"])) {
 							if ($user["login"] === $_POST["login"]) {
                                 if ($user["password"] === $_POST["pass"]) {
-                                    var_dump("Logged in");
+									$_SESSION["login"] = $_POST["login"];
+									header("Location: http://{$_SERVER["SERVER_NAME"]}:{$_SERVER["SERVER_PORT"]}/page.php");
                                 } else {
-                                    var_dump("Wrong password");
+                                    echo "Wrong password";
                                     break;
                                 }
 							}
@@ -39,7 +44,10 @@
             <input class="input" type="text" id="login" name="login"><br><br>
             <label for="pass">Password</label></br>
             <input class="input" type="password" id="pass" name="pass"><br><br>
-            <input class="button" href="login.php" type="submit" value="Submit">
-            <button><a href="register.php">Register</a></button>
+            <button type="submit">Submit</button>
         </form>
+        <div class="alternative">
+            <p>Do you want to create new account?</p>
+            <button><a href="register.php">Register</a></button>
+        </div>
     </body>

@@ -4,6 +4,9 @@
         <link rel="stylesheet" href="CSS/styles.css">
     </head>
     <body>
+        <div class="return">
+            <button><a href="index.php">Go back</a></button>
+        </div>
         <?php
             require '../IIS-project/src/database.php';
 
@@ -34,7 +37,10 @@
             <input class="input" type="text" id="login" name="login"><br><br>
             <label for="pass">Password</label></br>
             <input class="input" type="password" id="pass" name="pass"><br><br>
-            <input class="button" type="submit" value="Submit">
-            <button><a href="login.php">Log in</a></button>
+            <button type="submit"><a href="login.php">Submit</a></button>
         </form>
+        <div class="alternative">
+            <p>Do you want to log in?</p>
+            <button><a href="login.php">Log in</a></button>
+        </div>
     </body>
