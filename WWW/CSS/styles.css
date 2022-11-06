@@ -72,7 +72,10 @@ nav {
 .menu-item {
     padding: 10px;
     background: #e2e2e2;
+    border: solid 1px black;
+}
+
+.menu-item a {
     text-decoration: none;
     color: black;
-    border: solid 1px black;
 }
