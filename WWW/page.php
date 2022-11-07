@@ -16,15 +16,23 @@
 				}
 			}
 		?>
-	<nav>
-		<div class="menu-item">
-			<a href="player-list.php">Players</a>
-		</div>
-        <div class="menu-item">
-            <a href="team-list.php">Teams</a>
+
+        <div class="button_container right">
+			<?php
+                unset($_SESSION["login"]);
+                session_destroy();
+			?>
+            <button><a href="index.php">Log out</a></button>
         </div>
-        <div class="menu-item">
-            <a href="tournament-list.php">Tournaments</a>
-        </div>
-	</nav>
+        <nav>
+            <div class="menu-item">
+                <a href="player-list.php">Players</a>
+            </div>
+            <div class="menu-item">
+                <a href="team-list.php">Teams</a>
+            </div>
+            <div class="menu-item">
+                <a href="tournament-list.php">Tournaments</a>
+            </div>
+        </nav>
 	</body>

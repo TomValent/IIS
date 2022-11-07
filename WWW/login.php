@@ -4,7 +4,7 @@
         <link rel="stylesheet" href="CSS/styles.css">
     </head>
     <body>
-        <div class="return">
+        <div class="right">
             <button><a href="index.php">Go back</a></button>
         </div>
         <?php
