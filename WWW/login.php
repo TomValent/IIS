@@ -15,7 +15,7 @@
                 try {
                     $pdo = createDB();
 
-                    $sql = "SELECT login, password FROM Member";
+                    $sql = "SELECT login, password, isAdmin, MemberID FROM Member";
                     $data = $pdo->query($sql)->fetchAll();
 
                     session_start();
@@ -24,6 +24,8 @@
 							if ($user["login"] === $_POST["login"]) {
                                 if ($user["password"] === $_POST["pass"]) {
 									$_SESSION["login"] = $_POST["login"];
+									$_SESSION["id"] = $user["MemberID"];
+									$_SESSION["isAdmin"] = $user["isAdmin"];
 									header("Location: http://{$_SERVER["SERVER_NAME"]}:{$_SERVER["SERVER_PORT"]}/page.php");
                                 } else {
                                     echo "Wrong password";
