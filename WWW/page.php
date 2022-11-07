@@ -9,20 +9,16 @@
 				header("Location: http://{$_SERVER['SERVER_NAME']}:{$_SERVER["SERVER_PORT"]}/login.php");
 			}
 
-			if (isset($_SESSION['previous'])) {		//TODO zistit na FE (asi javascript) ci doslo k presmerovaniu a ukoncit session a toto zmazat xd
-				if (basename($_SERVER['PHP_SELF']) !== "page.php" && $_SESSION["previous"] !== "login.php") {
-					unset($_SESSION["login"]);
-					session_destroy();
-				}
-			}
+//			if (isset($_SESSION['previous'])) {		//TODO zistit na FE (asi javascript) ci doslo k presmerovaniu a ukoncit session a toto zmazat xd
+//				if (basename($_SERVER['PHP_SELF']) !== "page.php" && $_SESSION["previous"] !== "login.php") {
+//					unset($_SESSION["login"]);
+//					session_destroy();
+//				}
+//			}
 		?>
 
         <div class="button_container right">
-			<?php
-                unset($_SESSION["login"]);
-                session_destroy();
-			?>
-            <button><a href="index.php">Log out</a></button>
+            <button><a href="logout.php">Log out</a></button>
         </div>
         <nav>
             <div class="menu-item">
@@ -36,3 +32,4 @@
             </div>
         </nav>
 	</body>
+</html>
