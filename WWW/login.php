@@ -28,14 +28,13 @@
 									$_SESSION["isAdmin"] = $user["isAdmin"];
 									header("Location: http://{$_SERVER["SERVER_NAME"]}:{$_SERVER["SERVER_PORT"]}/page.php");
                                 } else {
-                                    echo "Wrong password";
-                                    break;
+									throw new Exception("Wrong Password");
                                 }
 							}
 						}
                     }
 
-                } catch(PDOException $e) {
+                } catch(PDOException|Exception $e) {
                     echo $e->getMessage();
                 }
             }

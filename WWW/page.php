@@ -5,7 +5,7 @@
 	<body>
 		<?php
 			session_start();
-            if (!isset($_SESSION["login"]) && !isset($_SESSION["host"])) {
+            if (!isset($_SESSION["login"]) && !isset($_SESSION["guest"])) {
 				header("Location: http://{$_SERVER['SERVER_NAME']}:{$_SERVER["SERVER_PORT"]}/login.php");
 			}
 
@@ -31,7 +31,7 @@
                 <a href="tournament-list.php">Tournaments</a>
             </div>
         </nav></br></br></br></br></br></br></br></br></br>
-		<?php if (!isset($_SESSION["login"])): ?>
+		<?php if (isset($_SESSION["guest"])): ?>
             <p style="text-align: center">Nejsi prihlaseny :)</p></br>
 		<?php endif ?>
 	</body>

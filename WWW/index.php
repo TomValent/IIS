@@ -15,7 +15,7 @@
             <p>Are you new here?</p>
             <div class="button_container">
                 <button><a href="register.php">Create new account</a></button>
-                <button><a href="host.php">Continue as host</a></button>
+                <button><a href="guest.php">Continue as guest</a></button>
             </div>
         </div>
 
@@ -27,9 +27,9 @@
 
                 $q = $pdo->query('SELECT * FROM Member');
                 $data = $q->fetchAll(PDO::FETCH_ASSOC);
-//                foreach($data as $row) {
-//                    echo "u: " . $row['Name'] . "<br>";
-//                }
+                foreach($data as $row) {
+                    echo "u: " . $row['Name'] . "<br>";
+                }
 
             } catch (PDOException $e) {
                 echo "Connection error: ".$e->getMessage();
