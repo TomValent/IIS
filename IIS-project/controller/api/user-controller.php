@@ -6,8 +6,10 @@ class UserController extends BaseController
 	/**
 	 * @throws MethodException
 	 */
-	public function logoutAction()
+	public function logoutAction(): void
 	{
+
+		error_log("logout action");
 		$this->checkRequestMethod('GET');
 
 		unset($_SESSION);
@@ -18,8 +20,9 @@ class UserController extends BaseController
 	/**
 	 * @throws MethodException
 	 */
-	public function registerAction()
+	public function registerAction(): void
 	{
+		/*
 		$this->checkRequestMethod('POST');
 
 		if (!isset($_POST["username"]) || $_POST["username"] == "") {
@@ -48,12 +51,13 @@ class UserController extends BaseController
 		$sql = "INSERT INTO Member VALUES (default, :username, :login, :password, 0)";
 		$stmt= $pdo->prepare($sql);
 		$stmt->execute($data);
+*/
 	}
 
 	/**
 	 * @throws MethodException
 	 */
-	public function loginAction()
+	public function loginAction(): void
 	{
 		$this->checkRequestMethod('POST');
 

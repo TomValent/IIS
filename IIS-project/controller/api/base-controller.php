@@ -3,7 +3,7 @@
 
 class MethodException extends Exception
 {
-	private $status;
+	private string $status;
 
 	public function __construct($message, $status = "HTTP/1.1 400 Bad Request", $code = 0, Throwable $previous = null)
 	{
@@ -11,7 +11,7 @@ class MethodException extends Exception
 		parent::__construct($message, $code, $previous);
 	}
 
-	public function getStatus()
+	public function getStatus(): string
 	{
 		return $this->status;
 	}
@@ -22,7 +22,7 @@ class BaseController
     /**
      * __call magic method.
      */
-    public function __call($name, $arguments)
+    public function __call($name, $arguments): void
     {
         $this->sendOutput('', array('HTTP/1.1 404 Not Found'));
     }
@@ -32,12 +32,10 @@ class BaseController
      *
      * @return array
      */
-    protected function getUriSegments()
-    {
+    protected function getUriSegments(): array
+	{
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $uri = explode( '/', $uri );
-
-        return $uri;
+		return explode( '/', $uri );
     }
 
     /**
@@ -45,8 +43,8 @@ class BaseController
      *
      * @return array
      */
-    protected function getQueryStringParams()
-    {
+    protected function getQueryStringParams(): array
+	{
         if (array_key_exists('QUERY_STRING', $_SERVER)) {
             parse_str($_SERVER['QUERY_STRING'], $query);
             return $query;
@@ -60,7 +58,7 @@ class BaseController
      * @param mixed  $data
      * @param string $httpHeader
      */
-    private function sendOutput($data, $httpHeaders=array())
+    private function sendOutput($data, $httpHeaders=array()): void
     {
         header_remove('Set-Cookie');
 		header('Content-Type: application/json');
@@ -73,11 +71,12 @@ class BaseController
         exit;
     }
 
-	private function sendError($message, $status) {
+	private function sendError($message, $status): void
+	{
 		$this->sendOutput(array('error' => $message), array($status));
 	}
 
-	public function invoke($method)
+	public function invoke($method): void
 	{
 		try {
 			$data = $this->{$method}();
@@ -87,13 +86,12 @@ class BaseController
 		catch (MethodException $e) {
 			$this->sendError($e->getMessage(), $e->getStatus());
 		}
-		catch (Error $e) {
-			// $msg = $e->getMessage(); optional info
-			$this->sendError('Something went wrong! Please contact support.', 'HTTP/1.1 500 Internal Server Error');
+		catch (Throwable $e) {
+			 $this->sendError('Internal server error', 'HTTP/1.1 500 Internal Server Error');
 		}
 	}
 
-	protected function checkRequestMethod($method)
+	protected function checkRequestMethod($method): void
 	{
 		$requestMethod = $_SERVER["REQUEST_METHOD"];
 		if (strtoupper($requestMethod) != $method) {

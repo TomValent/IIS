@@ -1,7 +1,7 @@
         <script>
 
             function getTournaments() {
-                get('/api.php/tournament/list', function(data) {
+                get(<?php echo url("/api.php/tournament/list") ?>, function(data) {
                     $('#tournaments').html(data.body);
                 });
             }

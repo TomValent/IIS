@@ -2,13 +2,14 @@
 
 class TournamentController extends BaseController {
 
-    private function getState($pdo, $tounament_id, $user_id) {
+    private function getState($pdo, $tournament_id, $user_id): ?string
+	{
         if (!$user_id) {
             return NULL;
         }
 
         $stmt= $pdo->prepare('SELECT AcceptanceState FROM TournamentParticipant WHERE TournamentID=:t_id AND MemberID=:m_id');
-        $stmt->execute(['t_id' => $tounament_id, "m_id" => $user_id]);
+        $stmt->execute(['t_id' => $tournament_id, "m_id" => $user_id]);
         $data = $stmt->fetch();
         if (!$data) {
             return 'none';
@@ -19,7 +20,8 @@ class TournamentController extends BaseController {
 	/**
 	 * @throws MethodException
 	 */
-	public function listAction() {
+	public function listAction(): array
+	{
 
 		$this->checkRequestMethod('GET');
 
@@ -69,7 +71,8 @@ class TournamentController extends BaseController {
 	/**
 	 * @throws MethodException
 	 */
-    public function startAction() {
+    public function startAction(): void
+	{
 		$this->checkRequestMethod('POST');
 
     }

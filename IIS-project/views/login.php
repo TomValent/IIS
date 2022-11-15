@@ -11,22 +11,27 @@
                     success: function(response) {
                         console.log('login successful')
                         $('#result').html('login successful')
-                        window.location.href = "/index.php/page"; //cela cesta kvoli eve
+                        setTimeout(function(){
+                            window.location.href = <?php echo url("/index.php/page") ?>
+                        }, 500);
                     },
                     error: function(response)
                     {
-                        console.log('login error')
-                        if (typeof response.responseJSON.error !== "undefined") {
-                            $('#result').html(response.responseJSON.error)
+                        let error = 'server-side error occurred'
+                        try {
+                            error = response.responseJSON.error
                         }
+                        catch(TypeError) {
+                        }
+                        $('#result').html(error)
                     },
                 });
             }
         </script>
         <div class="right">
-            <button><a href="/">Go back</a></button>
+            <button><a href=<?php echo url("/") ?>>Go back</a></button>
         </div>
-        <form class="form" method="post" action="/api.php/user/login">
+        <form class="form" method="post" action=<?php echo url("/api.php/user/login") ?>>
             <label for="login">Login</label></br>
             <input class="input" type="text" id="login" name="login"><br><br>
             <label for="pass">Password</label></br>

@@ -11,38 +11,11 @@ class Router {
 
 	private static function show($file): void
 	{
-		// begin
-		echo
-		'<!DOCTYPE html>
-<html>
-	<head>
-		<link rel="icon" type="image/png" href="/assets/favicon.ico">
-		<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
-		<link rel="stylesheet" href="/CSS/styles.css">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-		<script>
-			function logout() {
-                 $.get("/api.php/user/logout").done(function() {
-                     if (typeof onLogout !== "undefined") onLogout();                     
-                 }).fail(function(data, textStatus, xhr) {
-                     console.log("request failed");
-                 });
-			}
-            
-            function get(url, done) {
-                $.ajax({
-                	url: url
-                })
-                .done(done)
-                .fail(function(data, textStatus, xhr) {
-                     console.log("request failed");
-                 });
-            }            
-            
-		</script>
-	</head>
-	<body>';
+		// website start
+		echo "<!DOCTYPE html>";
+		echo "<html>";
+		require_once "website_header.php";
+		echo "	<body>";
 		$user = "(guest)";
 		if (isset($_SESSION["login"])) {
 			$user = $_SESSION["login"];
@@ -55,16 +28,19 @@ class Router {
 
 		// page content
 		require VIEWS_DIR."/".$file;
-		// end
-		echo
-		'	</body>
-</html>';
+		// website end
+		echo "	</body>";
+		echo "</html>";
 
 	}
 
 	public static function route($request): void
 	{
-		if ($request == "/" || $request == "/index.php") {
+		if (str_starts_with($request, "/~") && strlen($request) >= 10) {
+			$request = substr($request, 10);
+		}
+
+		if (strlen($request) == 0 || $request == "/" || $request == "/index.php") {
 			Router::show("index.php");
 		}
 		else {

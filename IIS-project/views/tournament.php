@@ -43,7 +43,7 @@ try {
     }
 
     function startTournament(id) {
-        let url = 'api.php/tournament/start';
+        let url = <?php echo url("/api.php/tournament/start") ?>;
         jQuery.ajax({
             type: "POST",
             url: url,

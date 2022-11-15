@@ -10,23 +10,30 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
+                        console.log('register successful')
                         $('#result').html('register successful')
-                        window.location.href = "login";
+                        setTimeout(function(){
+                            window.location.href = <?php echo url("/index.php/login") ?>;
+                        }, 500);
                     },
                     error: function(response)
                     {
-                        if (typeof response.responseJSON.error !== "undefined") {
-                            $('#result').html(response.responseJSON.error)
+                        let error = 'server-side error occurred'
+                        try {
+                            error = response.responseJSON.error
                         }
+                        catch(TypeError) {
+                        }
+                        $('#result').html(error)
                     },
                 });
             }
         </script>
         <div class="right">
-            <button><a href="/">Go back</a></button>
+            <button><a href=<?php echo url("/") ?>>Go back</a></button>
         </div>
 
-        <form class="form" method="post" action="/api.php/user/register">
+        <form class="form" method="post" action=<?php echo url("/api.php/user/register") ?>>
             <label for="username">Username</label></br>
             <input class="input" type="text" id="username" name="username"><br><br>
             <label for="login">Login</label></br>

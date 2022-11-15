@@ -1,8 +1,5 @@
 <?php
-
 require_once "../IIS-project/inc/bootstrap.php";
+require_once PRJ_DIR . '/src/router.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-	session_start();
-}
 Router::route($_SERVER['REQUEST_URI']);
