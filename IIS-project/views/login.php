@@ -9,11 +9,13 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
+                        console.log('login successful')
                         $('#result').html('login successful')
-                        window.location.href = "page";
+                        window.location.href = "/index.php/page"; //cela cesta kvoli eve
                     },
                     error: function(response)
                     {
+                        console.log('login error')
                         if (typeof response.responseJSON.error !== "undefined") {
                             $('#result').html(response.responseJSON.error)
                         }

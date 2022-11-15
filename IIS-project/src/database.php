@@ -12,23 +12,20 @@ class Database implements \SplSubject {
 
 	private function __construct()
 	{
-		try {
-			$dotenv = Dotenv::createImmutable(__DIR__ . "/..");
-			$dotenv->load();
-
-			$this->pdo = new PDO($_ENV['MYSQL_DSN'], $_ENV['MYSQL_USER'], $_ENV['MYSQL_PASS']);
-			error_log("=== DATABASE CONNECT ===");
-		} catch (Exception $e) {
-			echo "Server error: " . $e->getMessage();
-			die();
-		}
+		$dotenv = Dotenv::createImmutable(__DIR__ . "/..");
+		$dotenv->load();
+		$this->pdo = new PDO($_ENV['MYSQL_DSN'], $_ENV['MYSQL_USER'], $_ENV['MYSQL_PASS']);
+		error_log("=== DATABASE CONNECT ===");
 
 	}
 
 	public static function getInstance()
 	{
+		error_log("db1");
 		if (self::$instance == null) {
+			error_log("db2");
 			self::$instance = new Database();
+			error_log("db3");
 		}
 
 		return self::$instance;
