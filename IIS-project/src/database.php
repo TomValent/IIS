@@ -1,22 +1,91 @@
 <?php
 
-	use Dotenv\Dotenv;
+require_once "dotenv.php";
 
-	require __DIR__.'/../vendor/autoload.php';
+class Database implements \SplSubject {
+	private static $instance = null;
 
-	static $dotenv;
+	private $observers = array();
+	private $pdo = null;
 
-	if ($dotenv === null) {
-		try {
-			$dotenv = Dotenv::createImmutable(__DIR__ . "/..");
-			$dotenv->load();
-		} catch (Exception $e) {
-			echo "Server error: " . $e->getMessage();
-			die();
+	private function __construct()
+	{
+		loadDotenv();
+		$this->pdo = new PDO($_ENV['MYSQL_DSN'], $_ENV['MYSQL_USER'], $_ENV['MYSQL_PASS']);
+	}
+
+	public static function getInstance(): Database
+	{
+		if (self::$instance == null) {
+			self::$instance = new Database();
+		}
+
+		return self::$instance;
+	}
+
+	public function getPDO(): PDO
+	{
+		return $this->pdo;
+	}
+
+	public function getUserID($login)
+	{
+		$pdo = createDB();
+		$stmt= $pdo->prepare("SELECT MemberID FROM Member WHERE Login = :login");
+		$stmt->execute(['login' => $login]);
+		$user = $stmt->fetch();
+		if (!$user) {
+			return NULL;
+		}
+		return $user['MemberID'];
+	}
+
+	//add observer
+	public function attach(\SplObserver $observer) : void
+	{
+		$this->observers[] = $observer;
+	}
+
+	//remove observer
+	public function detach(\SplObserver $observer) : void
+	{
+		$key = array_search($observer,$this->observers, true);
+		if($key) {
+			unset($this->observers[$key]);
 		}
 	}
 
-	function createDB(): PDO
+	public function notify() : void
 	{
-		return new PDO($_ENV['MYSQL_DSN'], $_ENV['MYSQL_USER'], $_ENV['MYSQL_PASS']);
+		foreach ($this->observers as $value) {
+			$value->update($this);
+		}
 	}
+}
+
+class DbObserver implements SplObserver {
+
+	private $callback;
+
+	public function __construct($callback)
+	{
+		$this->callback = $callback;
+		$db = Database::getInstance();
+		$db->attach($this);
+	}
+
+	public function update(\SplSubject $subject): void
+	{
+		$this->callback();
+	}
+
+	function __destruct() {
+		$db = Database::getInstance();
+		$db->detach($this);
+	}
+}
+
+function createDB(): PDO
+{
+	return Database::getInstance()->getPDO();
+}
