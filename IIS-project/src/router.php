@@ -1,6 +1,6 @@
 <?php
 
-const PAGES = ["/page", "/tournaments", "/tournament", "/newTournament"];
+const PAGES = ["/page", "/tournaments", "/tournament", "/newTournament", "/players", "/teams"];
 
 class Router {
 
@@ -31,7 +31,7 @@ class Router {
 			";
 		} else {
 			echo "<div class='right'>
-            		<button><a href='/index.php'>Go back</a></button>
+            		<button><a href='/index.php'>Back to welcome page</a></button>
         		</div>";
 		}
 

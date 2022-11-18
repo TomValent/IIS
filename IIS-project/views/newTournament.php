@@ -4,7 +4,7 @@
     {
         echo $msg;
 		echo "  <div class='right'>
-                        <button><a href='/index.php/tournaments'>Go back</a></button>
+                        <button><a href='/index.php/tournaments'>Go back to tournaments</a></button>
                     </div>";
 		exit;
     }

@@ -59,7 +59,9 @@ class TournamentController extends BaseController {
 					}
 					$body .= '  <button onclick="leaveTournament(' . $id . ')">Leave</button>';
 				}
-				$body .= '  <button onclick="deleteTournament(' . $id . ')">Delete</button>';
+				if ($_SESSION["isAdmin"]) {
+					$body .= '  <button onclick="deleteTournament(' . $id . ')">Delete</button>';
+				}
 			}
 			$body .= '<br>';
 		}
