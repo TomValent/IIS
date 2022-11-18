@@ -16,7 +16,9 @@
             });
 
         </script>
+        <div class="button_container">
+            <button><a href="/index.php/newTournament">Create Tournament</a></button>
+        </div></br>
         Tournaments:
-        <div id="tournaments">
-        </div>
+        <div id="tournaments"></div>
 

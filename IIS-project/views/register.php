@@ -29,10 +29,6 @@
                 });
             }
         </script>
-        <div class="right">
-            <button><a href=<?php echo url("/") ?>>Go back</a></button>
-        </div>
-
         <form class="form" method="post" action=<?php echo url("/api.php/user/register") ?>>
             <label for="username">Username</label></br>
             <input class="input" type="text" id="username" name="username"><br><br>
@@ -42,7 +38,6 @@
             <input class="input" type="password" id="pass" name="pass"><br><br>
             <input type="button" value="Submit" onclick="onRegisterSubmit(this.form)"/>
         </form>
-        <div id="result"></div>
         <div class="alternative">
             <p>Do you want to log in?</p>
             <button><a href="login">Log in</a></button>

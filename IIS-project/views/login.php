@@ -28,9 +28,6 @@
                 });
             }
         </script>
-        <div class="right">
-            <button><a href=<?php echo url("/") ?>>Go back</a></button>
-        </div>
         <form class="form" method="post" action=<?php echo url("/api.php/user/login") ?>>
             <label for="login">Login</label></br>
             <input class="input" type="text" id="login" name="login"><br><br>

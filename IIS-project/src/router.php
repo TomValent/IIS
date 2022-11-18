@@ -1,5 +1,7 @@
 <?php
 
+const PAGES = ["/page", "/tournaments", "/tournament", "/newTournament"];
+
 class Router {
 
 	private static function error(): void
@@ -18,13 +20,20 @@ class Router {
 		echo "	<body>";
 		$user = "(guest)";
 		if (isset($_SESSION["login"])) {
-			$user = $_SESSION["login"];
+			$user = $_SESSION["username"];
 		}
-		echo "[DBG] User: " . $user;
-		if (isset($_SESSION["login"])) {
-			echo "<button onclick='logout()'>Logout</button>";
+		echo "<div class='right'>User: " . $user . "</div>";
+
+		if (isset($_SESSION["login"]) && isset($_SERVER["PATH_INFO"]) && in_array($_SERVER["PATH_INFO"], PAGES)) {
+			echo "	<div class='button_container right'>
+            			<button><a href='/index.php' onclick='logout()'>Log out</a></button>
+        			</div>
+			";
+		} else {
+			echo "<div class='right'>
+            		<button><a href='/index.php'>Go back</a></button>
+        		</div>";
 		}
-		echo "<br><br>";
 
 		// page content
 		require VIEWS_DIR."/".$file;
@@ -74,5 +83,4 @@ class Router {
 			}
 		}
 	}
-
 }

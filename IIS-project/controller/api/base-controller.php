@@ -52,12 +52,12 @@ class BaseController
         return array();
     }
 
-    /**
-     * Send API output.
-     *
-     * @param mixed  $data
-     * @param string $httpHeader
-     */
+	/**
+	 * Send API output.
+	 *
+	 * @param mixed $data
+	 * @param array $httpHeaders
+	 */
     private function sendOutput($data, $httpHeaders=array()): void
     {
         header_remove('Set-Cookie');
@@ -91,6 +91,9 @@ class BaseController
 		}
 	}
 
+	/**
+	 * @throws MethodException
+	 */
 	protected function checkRequestMethod($method): void
 	{
 		$requestMethod = $_SERVER["REQUEST_METHOD"];

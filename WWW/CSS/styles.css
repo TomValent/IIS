@@ -59,7 +59,7 @@ h1 {
 }
 
 .right {
-    margin-top: 25px;
+    margin-top: 5px;
     text-align: right;
     display: block;
 }
@@ -79,4 +79,37 @@ nav {
 .menu-item a {
     text-decoration: none;
     color: black;
+}
+
+.center {
+    text-align: center;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid;
+}
+
+table {
+    margin: auto;
+    margin-top: 10%;
+    border-collapse: collapse;
+}
+
+td, th {
+    text-align: center;
+    padding: 5px;
+}
+
+.strong {
+    font-weight: bold;
+}
+
+td > input {
+    padding-right: 2px;
+    padding-left: 2px;
+}
+
+.padd {
+    width: 95%;
 }

@@ -22,7 +22,6 @@ class UserController extends BaseController
 	 */
 	public function registerAction(): void
 	{
-		/*
 		$this->checkRequestMethod('POST');
 
 		if (!isset($_POST["username"]) || $_POST["username"] == "") {
@@ -51,7 +50,6 @@ class UserController extends BaseController
 		$sql = "INSERT INTO Member VALUES (default, :username, :login, :password, 0)";
 		$stmt= $pdo->prepare($sql);
 		$stmt->execute($data);
-*/
 	}
 
 	/**
@@ -72,7 +70,7 @@ class UserController extends BaseController
 		$pass = $_POST["pass"];
 
 		$pdo = createDB();
-		$stmt = $pdo->prepare("SELECT Login, Password, IsAdmin, MemberID FROM Member WHERE Login=:login");
+		$stmt = $pdo->prepare("SELECT * FROM Member WHERE Login=:login");
 		$stmt->execute(['login' => $login]);
 
 		$user = $stmt->fetch();
@@ -86,6 +84,7 @@ class UserController extends BaseController
 
 		$_SESSION["login"] = $user["Login"];
 		$_SESSION["id"] = $user["MemberID"];
+		$_SESSION["username"] = $user["Name"];
 		$_SESSION["isAdmin"] = $user["IsAdmin"];
 	}
 
