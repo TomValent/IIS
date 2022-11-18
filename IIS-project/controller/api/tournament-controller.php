@@ -51,7 +51,10 @@ class TournamentController extends BaseController {
 				.'</div></div>';
 			if ($state) {
 				if ($state == 'none') {
-					$body .= '  <button onclick="joinTournament(' . $id . ')">Join</button>';
+					$body .= "	<form method='post' action='/index.php/tournaments'>
+									<input type='hidden' name='id' value=$id>
+									<input style='float:left' type='submit' value='Join' name='joined'>
+							  	</form>";
 				}
 				else {
 					if ($state == 'pending') {
@@ -60,7 +63,7 @@ class TournamentController extends BaseController {
 					$body .= '  <button onclick="leaveTournament(' . $id . ')">Leave</button>';
 				}
 				if ($_SESSION["isAdmin"]) {
-					$body .= '  <button onclick="deleteTournament(' . $id . ')">Delete</button>';
+					$body .= '  <button onclick="deleteTournament(' . $id . ')">Delete</button></br>';
 				}
 			}
 			$body .= '<br>';

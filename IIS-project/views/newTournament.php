@@ -25,7 +25,7 @@
 
 		$data = [
             'name' => $_GET['name'],
-            'startTime' => strval(intval(strtotime($_GET['start'])) - 3600),
+            'startTime' => $_GET['start'],
             'type' => $_GET['type'],
             'participantCount' => intval($_GET['participants']),
             'maxCountTeam' => intval($_GET['max']),

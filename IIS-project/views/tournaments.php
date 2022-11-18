@@ -27,3 +27,32 @@
         Tournaments:
         <div id="tournaments"></div>
 
+        <?php
+            function joinTournament($tournamentID): void
+            {
+                $pdo = createDB();
+                $sql = "SELECT type FROM Tournament WHERE TournamentID = :id";
+                $smth= $pdo->prepare($sql);
+                $result = $smth->execute(["id" => $tournamentID]);
+                var_dump($smth->queryString);
+                var_dump(" " . $result);exit;//but whyyy
+
+                $data = [
+
+                ];
+
+                $sql = "";
+
+    //			try {
+    //				$stmt= $pdo->prepare($sql);
+    //				$stmt->execute($data);
+    //			} catch (Exception $e) {
+    //				error("Error in joining tournament. Please try again");
+    //			}
+    //            unset($_POST["joined"]);
+            }
+
+            if (isset($_POST["joined"])) {
+                    joinTournament($_POST["id"]);
+            }
+        ?>
