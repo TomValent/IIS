@@ -1,11 +1,31 @@
 <?php
 
+    function error(string $msg): void
+    {
+        echo $msg;
+		echo "  <div class='right'>
+                        <button><a href='/index.php/tournaments'>Go back</a></button>
+                    </div>";
+		exit;
+    }
+
     if (!empty($_GET['name']) && !empty($_GET['start']) && !empty($_GET['type']) && !empty($_GET['participants']) && !empty($_GET['min']) && !empty($_GET['max'])) {
         error_log("i am in");
 
-        $data = [
+        if (intval($_GET["participants"]) <= 0 || intval($_GET["min"]) <= 0 || intval($_GET["max"]) <= 0) {
+            error("Too little participants or team members");
+        }
+        if (intval($_GET["participants"]) < 2*intval($_GET["max"]) || intval($_GET["max"] < intval($_GET["min"]))) {
+			error("Minimum is 2 teams and maximum must be bigger than minimum");
+        }
+
+		if (time() >= intval(strtotime($_GET['start'])) - 3600) {   //zle casove pasmo pri konvertovani
+			error("Tournament must start in future");
+		}
+
+		$data = [
             'name' => $_GET['name'],
-            'startTime' => $_GET["start"],
+            'startTime' => strval(intval(strtotime($_GET['start'])) - 3600),
             'type' => $_GET['type'],
             'participantCount' => intval($_GET['participants']),
             'maxCountTeam' => intval($_GET['max']),
@@ -20,8 +40,8 @@
             $data["description"] = $_GET['description'];
         }
 
-        if (empty($_GET['price'])) {
-            $data["description"] = "None";
+        if (empty($_GET['price'])) {;
+            $data["price"] = "None";
         } else {
             $data["price"] = "None";
         }
@@ -31,12 +51,14 @@
         $pdo = createDB();
 
         $sql = "INSERT INTO Tournament VALUES (default, :name, :creatorID, :startTime, :description, :price, :type, :participantCount, :maxCountTeam, :minCountTeam, :approvalState, :progressState)";
-        error_log("cas " . $data["startTime"]);
-        $stmt= $pdo->prepare($sql);
-        $stmt->execute($data);
-    }
-    else {
-        error_log("error " . time());
+
+		try {
+			$stmt= $pdo->prepare($sql);
+			$stmt->execute($data);
+		} catch (Exception $e) {
+            error("Error in creating tournament. Please try again");
+        }
+        echo "Tournament created!";
     }
 ?>
 <div class='right'>
@@ -73,7 +95,10 @@
                 <label class="strong" for="type">Type</label>
             </td>
             <td>
-                <input type="text" class="padd" name="type"><!-- select  -->
+                <select class="select" name="type">
+                    <option value="team">Team</option>
+                    <option value="member">Member</option>
+                </select>
             </td>
         </tr>
         <tr>
@@ -110,6 +135,6 @@
         </tr>
     </table>
     <div class="center">
-        <input type="submit" value="Create" />
+        <input type="submit" value="Create" href="/index.php/tournaments" />
     </div>
 </form>

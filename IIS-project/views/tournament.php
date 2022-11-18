@@ -1,3 +1,6 @@
+<div class='right'>
+    <button><a href='/index.php/tournaments'>Go back</a></button>
+</div>
 <?php
 
     if (!isset($_GET['id'])) {
