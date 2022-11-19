@@ -5,18 +5,22 @@
         echo $msg;
 		echo "  <div class='right'>
                         <button><a href='/index.php/tournaments'>Go back to tournaments</a></button>
-                    </div>";
+                </div>";
 		exit;
     }
 
-    if (!empty($_GET['name']) && !empty($_GET['start']) && !empty($_GET['type']) && !empty($_GET['participants']) && !empty($_GET['min']) && !empty($_GET['max'])) {
+    if (!empty($_GET['name']) && !empty($_GET['start']) && !empty($_GET['type']) && !empty($_GET['participants'])) {
         error_log("i am in");
 
-        if (intval($_GET["participants"]) <= 0 || intval($_GET["min"]) <= 0 || intval($_GET["max"]) <= 0) {
-            error("Too little participants or team members");
-        }
-        if (intval($_GET["participants"]) < 2*intval($_GET["max"]) || intval($_GET["max"] < intval($_GET["min"]))) {
-			error("Minimum is 2 teams and maximum must be bigger than minimum");
+        if ($_GET['type'] === "team") {
+			if (!empty($_GET['min']) && !empty($_GET['max'])) {
+				if (intval($_GET["participants"]) <= 0 || intval($_GET["min"]) <= 0 || intval($_GET["max"]) <= 0) {
+					error("Too little participants or team members");
+				}
+				if (intval($_GET["participants"]) < 2*intval($_GET["max"]) || intval($_GET["max"] < intval($_GET["min"]))) {
+					error("Minimum is 2 teams and maximum must be bigger than minimum");
+				}
+            }
         }
 
 		if (time() >= intval(strtotime($_GET['start'])) - 3600) {   //zle casove pasmo pri konvertovani
@@ -64,6 +68,7 @@
 <div class='right'>
     <button><a href='/index.php/tournaments'>Go back</a></button>
 </div>
+<p>If you choose type Member, min and max team members fields are not required.</p>
 <form class="table" method="get">
     <table>
         <tr>
