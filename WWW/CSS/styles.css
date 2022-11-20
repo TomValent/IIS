@@ -1,3 +1,8 @@
+body {
+    font-family: 'Poppins';
+    font-size: 1.2em;
+}
+
 .button_container {
     padding-bottom: 50px;
     display: inline-block;
@@ -6,6 +11,9 @@
 button {
     margin-left: 5px;
     margin-right: 5px;
+    border: 1px solid black;
+    font-size: 0.8em;
+    font-weight: 400;
 }
 
 button a {
@@ -114,6 +122,33 @@ td > input {
     width: 95%;
 }
 
+/* Remove IE arrow */
+select::-ms-expand {
+    display: none;
+}
+select {
+    border: 1px solid black;
+    border-radius: 0;
+    font-size: 0.8em;
+}
+
 .select {
     width: 98%;
 }
+
+.tournament_list_row {
+    display: inline-block;
+    margin-top: 0.4em;
+}
+
+.label {
+    background-color: #222222;
+    padding: 0.2em;
+    vertical-align: middle;
+    font-size: 0.6em;
+    color: white;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.pending {background-color: #696969;}

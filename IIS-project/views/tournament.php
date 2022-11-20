@@ -1,6 +1,136 @@
 <div class='right'>
     <button><a href='/index.php/tournaments'>Back to tournaments</a></button>
 </div>
+<script>
+
+    function getOwnedTeams() {
+        api.get({
+            url: <?php echo url("/api.php/user/owned_teams") ?>,
+            success: (data) => {
+                let teams = ["Select team"].concat(data.teams);
+                sel.html.innerHTML = "";
+                for (const t of teams) {
+                    let option = document.createElement("option");
+                    option.value = t;
+                    option.text = t;
+                    sel.html.appendChild(option);
+                }
+            }
+        })
+    }
+
+    let sel = {
+        par: null,
+        id: null,
+        html: document.createElement("select")
+    };
+
+    function hideTeamSelect() {
+        if (sel.par) {
+            let b = sel.par.getElementsByTagName("button")[0]
+            b.style.display = 'inline'
+            sel.par = null
+        }
+        sel.html.selectedIndex = 0
+        sel.html.style.display = 'none'
+    }
+
+    function showTeamSelect(id, elem) {
+        if (sel.par === elem) {
+            return
+        }
+        hideTeamSelect()
+        let b = elem.getElementsByTagName("button")[0]
+        b.style.display = 'none'
+        sel.html.style.display = 'inline'
+        elem.appendChild(sel.html)
+        sel.par = elem
+        sel.id = id
+    }
+
+    sel.html.addEventListener(
+        'change',
+        () => {
+            if (sel.html.selectedIndex == 0) {
+                return
+            }
+            let team_name = sel.html.value
+            console.log('join r: ' + team_name)
+
+            api.post({
+                url: <?php echo url("/api.php/tournament/join") ?>,
+                data: {
+                    id: sel.id,
+                    team_name: team_name
+                },
+                success: (data) => {
+                    console.log('team joined')
+                    hideTeamSelect()
+                },
+                error: () => {
+                    hideTeamSelect()
+                }
+            })
+        },
+        false
+    );
+
+    getOwnedTeams();
+
+    function joinTournament(id, elem) {
+        if (elem)  {
+            // team join
+            showTeamSelect(id, elem)
+        }
+        else {
+            // member join
+            api.post({
+                url: <?php echo url("/api.php/tournament/join") ?>,
+                data: {id: id},
+                // success: getTournaments
+            })
+        }
+    }
+
+    function leaveTournament(id, team_id) {
+        let data = {
+            id: id
+        }
+        if (team_id) {
+            data.team_id = team_id
+        }
+        api.post({
+            url: <?php echo url("/api.php/tournament/leave") ?>,
+            data: data,
+            // success: getTournaments
+        })
+    }
+
+    function updateParticipant(url, tournament_id, participant_id) {
+        api.post({
+            url: url,
+            data: {t_id: tournament_id, p_id: participant_id},
+            // success: getTournaments
+        })
+    }
+
+    function acceptParticipant(tournament_id, participant_id) {
+        updateParticipant(<?php echo url("/api.php/tournament/accept") ?>, tournament_id, participant_id);
+    }
+
+    function revokeParticipant(tournament_id, participant_id) {
+        updateParticipant(<?php echo url("/api.php/tournament/revoke") ?>, tournament_id, participant_id);
+    }
+
+    function kickParticipant(tournament_id, participant_id) {
+        updateParticipant(<?php echo url("/api.php/tournament/kick") ?>, tournament_id, participant_id);
+    }
+
+    function rejectParticipant(tournament_id, participant_id) {
+        updateParticipant(<?php echo url("/api.php/tournament/kick") ?>, tournament_id, participant_id);
+    }
+
+</script>
 <?php
 
     if (!isset($_GET['id'])) {
@@ -20,58 +150,96 @@
             exit();
         }
 
-        $stmt = $pdo->prepare("SELECT * FROM TournamentParticipant WHERE TournamentID=:id");
-        $stmt->execute(['id' => $id]);
-        echo 'Participants:<br>';
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            echo $row['MemberID'].'<br>';
+        $tournament_owner = false;
+		echo 'Tournament<br>';
+		echo $tournament['Name'].'<br>';
+
+        if ($tournament['type'] == 'team') {
+			$participants = Database::getInstance()->getTeamParticipants($id);
+		}
+        else {
+			$participants = Database::getInstance()->getMemberParticipants($id);
         }
-        echo '<br>';
+
+        if (isset($_SESSION["id"])) {
+			$user_id = $_SESSION["id"];
+            $tournament_owner = $user_id == $tournament["CreatorID"];
+            echo '<div id="tournament_management" style="display: inline">';
+			if ($tournament_owner) {
+				if ($tournament['ProgressState'] == 'unstarted') {
+					echo '<button onclick="startTournament('.$id.')">Start tournament</button>';
+				}
+				echo '<button>Edit tournament</button>';
+			}
+			if ($_SESSION["isAdmin"]) {
+				echo '<button onclick="deleteTournament(' . $id . ')">Delete tournament</button>';
+			}
+
+			if ($tournament['type'] == 'team') {
+				echo '<div id="join" style="display:inline;">';
+				echo '<button onclick="joinTournament(' . $id . ', this.parentElement)">Join</button>';
+				echo '</div>';
+                $teams = array();
+                foreach ($participants as $p) {
+                    if ($p['LeaderID'] == $user_id) {
+                        $teams[] = $p;
+                    }
+			    }
+                if (count($teams) > 0) {
+                    echo '<div>';
+					echo 'My participating teams:<br>';
+                    foreach ($teams as $t) {
+						echo $t['Name'];
+                        if ($t['AcceptanceState'] == 'pending') {
+							echo '<span class="label pending">PENDING</span>';
+						}
+						echo '<button onclick="leaveTournament(' . $id . ', ' . $t['TeamID'] .')">Leave</button>';
+						echo '<br>';
+					}
+					echo '</div>';
+                }
+			} else {
+
+				$state = Database::getInstance()->getMemberParticipantState($id, $user_id);
+				if ($state == 'none') {
+					echo '<button onclick="joinTournament(' . $id . ')">Join</button>';
+				} else {
+					if ($state == 'pending') {
+						echo '<span class="label pending">PENDING</span>';
+					}
+					echo '<button onclick="leaveTournament(' . $id . ')">Leave</button>';
+				}
+			}
+			echo '</div>';
+		}
+
+		echo '<br>Participants:<br>';
+        if ($tournament_owner) {
+			foreach ($participants as $p) {
+                if ($p['AcceptanceState'] == 'pending') {
+					echo $p['Name'];
+					echo '<span class="label pending">PENDING</span>';
+					echo '<button onclick="acceptParticipant(' . $id . ', ' . $p['TournamentParticipantID'] . ')">Accept</button>';
+					echo '<button onclick="kickParticipant(' . $id . ', ' . $p['TournamentParticipantID'] . ')">Reject</button>';
+					echo '<br>';
+                }
+
+			}
+		}
+		foreach ($participants as $p) {
+			if ($p['AcceptanceState'] == 'approved') {
+				echo $p['Name'];
+				echo '<button onclick="revokeParticipant(' . $id . ', ' . $p['TournamentParticipantID'] . ')">Revoke</button>';
+				echo '<button onclick="kickParticipant(' . $id . ', ' . $p['TournamentParticipantID'] . ')">Kick</button>';
+				echo '<br>';
+			}
+		}
 
         echo '<div id="content">';
-    ?>
-    <script>
-        function checkResult(obj) {
-            if( !('error' in obj) ) {
-                console.log('ok');
-                return true;
-            }
-            else {
-                console.log(obj.error);
-                if (obj.debug) {
-                    console.log(obj.debug);
-                }
-                return false;
-            }
-        }
-
-        function startTournament(id) {
-            let url = <?php echo url("/api.php/tournament/start") ?>;
-            jQuery.ajax({
-                type: "POST",
-                url: url,
-                dataType: 'json',
-                data: { id: id },
-                success: (obj) => {
-                    if (checkResult(obj)) {
-                        $('#content').html(obj.body);
-                    }
-                }
-            });
-
-        }
-    </script>
-    <?php
-
-        if ($tournament['ProgressState'] == 'unstarted') {
-            echo '<button onclick="startTournament('.$id.')">start</button><br>';
-        }
         echo '</div>';
 
-        // echo count($data). '  ' . $data[0]['Name'];
-
     } catch (PDOException $e) {
-        $result['error'] = "Connection error: " . $e->getMessage();
+		echo $e->getMessage();
         die();
     }
 ?>

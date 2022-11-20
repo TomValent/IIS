@@ -88,4 +88,27 @@ class UserController extends BaseController
 		$_SESSION["isAdmin"] = $user["IsAdmin"];
 	}
 
+	/**
+	 * @throws MethodException
+	 */
+	public function owned_teamsAction(): array
+	{
+		$this->checkRequestMethod('GET');
+		$this->checkLoggedIn();
+		$user_id = $_SESSION["id"];
+
+		$pdo = createDB();
+		$stmt = $pdo->prepare("SELECT Name FROM Team WHERE LeaderID=:id");
+		$stmt->execute(['id' => $user_id]);
+
+		$teams = array();
+
+		while ($row = $stmt->fetch()) {
+			$teams[] = $row['Name'];
+		}
+
+		$result['teams'] = $teams;
+		return $result;
+	}
+
 }

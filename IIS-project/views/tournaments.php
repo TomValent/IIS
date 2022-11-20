@@ -4,18 +4,21 @@
         <script>
 
             function getTournaments() {
-                get(<?php echo url("/api.php/tournament/list") ?>, function(data) {
-                    $('#tournaments').html(data.body);
-                });
+                api.get({
+                    url: <?php echo url("/api.php/tournament/list") ?>,
+                    success: (data) => {
+                        $('#tournaments').html(data.body)
+                    }
+                })
             }
 
             function onLogout() {
-                getTournaments();
+                getTournaments()
             }
 
             // initialize jQuery
             $(function() {
-                getTournaments();
+                getTournaments()
             });
 
         </script>
@@ -27,3 +30,4 @@
         <?php endif ?>
         Tournaments:
         <div id="tournaments"></div>
+

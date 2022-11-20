@@ -4,7 +4,7 @@ const VIEWS_DIR =  PRJ_DIR . "/views";
 
 require_once PRJ_DIR . '/src/database.php';
 
-function url($url)
+function url($url): string
 {
 	return "\"" . $GLOBALS["url_prefix"] . $url . "\"";
 }

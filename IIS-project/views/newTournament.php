@@ -12,6 +12,10 @@
     if (!empty($_GET['name']) && !empty($_GET['start']) && !empty($_GET['type']) && !empty($_GET['participants'])) {
         error_log("i am in");
 
+        error_log("timezone: " . date_default_timezone_get());
+		error_log("time: ". date('m/d/Y h:i:s a', time()));
+		error_log("start: ". date('m/d/Y h:i:s a', strtotime($_GET['start'])));
+
         if ($_GET['type'] === "team") {
 			if (!empty($_GET['min']) && !empty($_GET['max'])) {
 				if (intval($_GET["participants"]) <= 0 || intval($_GET["min"]) <= 0 || intval($_GET["max"]) <= 0) {

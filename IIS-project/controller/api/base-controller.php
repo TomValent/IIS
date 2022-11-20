@@ -103,4 +103,37 @@ class BaseController
 			throw new MethodException('Method not supported', 'HTTP/1.1 422 Unprocessable Entity');
 		}
 	}
+
+	/**
+	 * @throws MethodException
+	 */
+	protected function get($from, $field)
+	{
+		if (!isset($from[$field])) {
+			throw new MethodException("Missing GET/POST data");
+		}
+		return $from[$field];
+	}
+
+	/**
+	 * @throws MethodException
+	 */
+	protected function checkLoggedIn(): void
+	{
+		if (!isset($_SESSION["id"])) {
+			throw new MethodException("Missing user info");
+		}
+	}
+
+	/**
+	 * @throws MethodException
+	 */
+	protected function checkLoggedInAdmin(): void
+	{
+		if (!isset($_SESSION["isAdmin"]) || !$_SESSION["isAdmin"]) {
+			throw new MethodException("Must be admin");
+		}
+	}
+
+
 }

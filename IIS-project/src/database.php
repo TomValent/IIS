@@ -31,13 +31,77 @@ class Database implements \SplSubject {
 	public function getUserID($login)
 	{
 		$pdo = createDB();
-		$stmt= $pdo->prepare("SELECT MemberID FROM Member WHERE Login = :login");
+		$stmt= $pdo->prepare("SELECT MemberID FROM Member WHERE Login = :login;");
 		$stmt->execute(['login' => $login]);
 		$user = $stmt->fetch();
 		if (!$user) {
 			return NULL;
 		}
 		return $user['MemberID'];
+	}
+
+	public function getTournamentByID($id)
+	{
+		$pdo = createDB();
+		$stmt = $pdo->prepare("SELECT * FROM Tournament WHERE TournamentID=:id;");
+		$stmt->execute(["id" => $id]);
+		$tournament = $stmt->fetch();
+		if (!$tournament) {
+			return NULL;
+		}
+		return $tournament;
+	}
+
+	private function getParticipantState($sql, $data): ?string
+	{
+		$pdo = createDB();
+		$stmt= $pdo->prepare($sql);
+		$stmt->execute($data);
+		$data = $stmt->fetch();
+		if (!$data) {
+			return 'none';
+		}
+		return $data['AcceptanceState'];
+	}
+
+	public function getMemberParticipantState($tournament_id, $user_id): ?string
+	{
+		$sql = 'SELECT AcceptanceState FROM TournamentParticipant WHERE TournamentID = ? AND MemberID = ?;';
+		return $this->getParticipantState($sql, [$tournament_id, $user_id]);
+	}
+
+	public function getTeamParticipantState($tournament_id, $team_id): ?string
+	{
+		$sql = 'SELECT AcceptanceState FROM TournamentParticipant WHERE TournamentID = ? AND TeamID = ?;';
+		return $this->getParticipantState($sql, [$tournament_id, $team_id]);
+	}
+
+	public function getTeamParticipants($id, $leader_id = NULL) {
+		$sql = "SELECT * FROM TournamentParticipant TP "
+			."INNER JOIN Team T ON TP.TeamID = T.TeamID "
+			."WHERE TP.TournamentID = :id";
+		$data = ['id' => $id];
+		if ($leader_id !== NULL) {
+			$sql .= " AND T.LeaderID = :l_id";
+			$data['l_id'] = $leader_id;
+		}
+
+		$pdo = createDB();
+		$stmt = $pdo->prepare($sql);
+		$stmt->execute($data);
+
+		return $stmt->fetchAll();
+	}
+
+	public function getMemberParticipants($id) {
+		$sql = "SELECT * FROM TournamentParticipant TP "
+			."INNER JOIN Member M ON TP.MemberID = M.MemberID";
+
+		$pdo = createDB();
+		$stmt = $pdo->prepare($sql);
+		$stmt->execute();
+
+		return $stmt->fetchAll();
 	}
 
 	//add observer
