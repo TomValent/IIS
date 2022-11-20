@@ -26,7 +26,7 @@ class Router {
 
 		if (isset($_SESSION["login"]) && isset($_SERVER["PATH_INFO"]) && in_array($_SERVER["PATH_INFO"], PAGES)) {
 			echo "	<div class='button_container right'>
-            			<button><a href='/index.php' onclick='logout()'>Log out</a></button>
+            			<button><a onclick='logout()'>Log out</a></button>
         			</div>
 			";
 		} else {
@@ -55,13 +55,10 @@ class Router {
 		else {
 
 			if (!str_starts_with($request, "/index.php/")) {
+				error_log("invalid request: ".$request);
 				Router::error();
 			}
 			$request = substr($request, strlen("/index.php/"));
-
-			if (strpos($request, ".")) {
-				Router::error();
-			}
 
 			$target = $request;
 			$pos = strpos($request , "?");
@@ -70,6 +67,11 @@ class Router {
 			}
 			if ($pos) {
 				$target = substr($request, 0, $pos);
+			}
+
+			if (strpos($target, ".")) {
+				error_log("invalid request: (has dot) ".$request);
+				Router::error();
 			}
 			$target .= ".php";
 
