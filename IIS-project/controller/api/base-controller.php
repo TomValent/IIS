@@ -84,9 +84,11 @@ class BaseController
 			$this->sendOutput($data, array('HTTP/1.1 200 OK'));
 		}
 		catch (MethodException $e) {
+			error_log("error: ". $e->getMessage());
 			$this->sendError($e->getMessage(), $e->getStatus());
 		}
 		catch (Throwable $e) {
+			 error_log("error: ". $e->getMessage());
 			 $this->sendError('Internal server error', 'HTTP/1.1 500 Internal Server Error');
 		}
 	}
