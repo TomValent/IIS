@@ -51,10 +51,7 @@ class TournamentController extends BaseController {
 				.'</div></div>';
 			if ($state) {
 				if ($state == 'none') {
-					$body .= "	<form method='post' action='/index.php/tournaments'>
-									<input type='hidden' name='id' value=$id>
-									<input style='float:left' type='submit' value='Join' name='joined'>
-							  	</form>";
+					$body .= '  <button onclick="joinTournament(' . $id . ')">Join</button>';
 				}
 				else {
 					if ($state == 'pending') {
