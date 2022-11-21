@@ -52,8 +52,48 @@ class TournamentController extends BaseController {
     public function startAction(): void
 	{
 		$this->checkRequestMethod('POST');
+		$id = $this->get($_POST, "id");
 
-    }
+		$pdo = createDB();
+
+		$stmt = $pdo->prepare("UPDATE Tournament SET ProgressState = 'ongoing' WHERE TournamentID = :id");
+		$stmt->execute(["id" => $id]);
+
+		error_log("tournament started");
+
+	}
+
+	/**
+	 * @throws MethodException
+	 */
+	public function endAction(): void
+	{
+		$this->checkRequestMethod('POST');
+		$id = $this->get($_POST, "id");
+
+		$pdo = createDB();
+
+		$stmt = $pdo->prepare("UPDATE Tournament SET ProgressState = 'finished' WHERE TournamentID = :id");
+		$stmt->execute(["id" => $id]);
+
+		error_log("tournament finished");
+	}
+
+	/**
+	 * @throws MethodException
+	 */
+	public function deleteAction(): void
+	{
+		$this->checkRequestMethod('POST');
+		$id = $this->get($_POST, "id");
+
+		$pdo = createDB();
+
+//		$stmt = $pdo->prepare("UPDATE Tournament SET ProgressState = 'finished' WHERE TournamentID = :id");
+//		$stmt->execute(["id" => $id]);
+
+		error_log("tournament deleted");
+	}
 
 	/**
 	 * @throws MethodException

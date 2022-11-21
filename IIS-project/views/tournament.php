@@ -130,6 +130,36 @@
         updateParticipant(<?php echo url("/api.php/tournament/kick") ?>, tournament_id, participant_id);
     }
 
+    function startTournament(tournament_id) {
+        let data = {
+            id: tournament_id
+        }
+        api.post({
+            url: <?php echo url("/api.php/tournament/start") ?>,
+            data: data,
+        })
+    }
+
+    function endTournament(tournament_id) {
+        let data = {
+            id: tournament_id
+        }
+        api.post({
+            url: <?php echo url("/api.php/tournament/end") ?>,
+            data: data,
+        })
+    }
+
+    function deleteTournament(tournament_id) {
+        let data = {
+            id: tournament_id
+        }
+        api.post({
+            url: <?php echo url("/api.php/tournament/delete") ?>,
+            data: data,
+        })
+    }
+
 </script>
 <?php
 
@@ -166,10 +196,20 @@
             $tournament_owner = $user_id == $tournament["CreatorID"];
             echo '<div id="tournament_management" style="display: inline">';
 			if ($tournament_owner) {
-				if ($tournament['ProgressState'] == 'unstarted') {
-					echo '<button onclick="startTournament('.$id.')">Start tournament</button>';
+                if (isset($_SESSION["isAdmin"])){
+					if ($tournament['ProgressState'] == 'unstarted') {
+						echo '<button onclick="startTournament(' . $id . ')">Start tournament</button>';
+					} else if ($tournament['ProgressState'] == 'ongoing' && isset($_POST["finished"])) {
+						echo '<button onclick="endTournament(' . $id . ')">End tournament</button>';
+                    }
+                }
+                if (isset($_SESSION["isAdmin"])) {
+                    $_GET["edit"] = "true";
+                    echo '<div class="tournament_list_row"> '
+						.'<div class="button_container" style="display: inline">'
+						. '<button><a href="editTournament?id=' . $id . '&edit=true">Edit tournament</a></button>'
+						. '</div></div><br>';
 				}
-				echo '<button>Edit tournament</button>';
 			}
 			if ($_SESSION["isAdmin"]) {
 				echo '<button onclick="deleteTournament(' . $id . ')">Delete tournament</button>';

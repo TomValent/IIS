@@ -23,7 +23,6 @@ button a {
 
 .button_container a {
     display: inline;
-    padding: 0 1em;
     color: black;
     text-decoration: none;
 }

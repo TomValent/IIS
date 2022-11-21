@@ -51,7 +51,7 @@
         if (empty($_GET['price'])) {;
             $data["price"] = "None";
         } else {
-            $data["price"] = "None";
+            $data["price"] = $_GET['price'];
         }
 
 		$data["creatorID"] = $_SESSION["id"];
@@ -67,6 +67,11 @@
             error("Error in creating tournament. Please try again");
         }
         echo "Tournament created!";
+    }  else if (!empty($_GET["submitted"])) {
+		error_log("i am in else");
+		error("Tournament not edited. Missing required information.");
+	} else {
+		error_log("i am in despair");
     }
 ?>
 <div class='right'>
@@ -144,6 +149,7 @@
         </tr>
     </table>
     <div class="center">
+        <input type="hidden" name="submitted" value="submitted">
         <input type="submit" value="Create" href="/index.php/tournaments" />
     </div>
 </form>
