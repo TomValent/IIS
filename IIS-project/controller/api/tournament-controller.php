@@ -89,8 +89,14 @@ class TournamentController extends BaseController {
 
 		$pdo = createDB();
 
-//		$stmt = $pdo->prepare("UPDATE Tournament SET ProgressState = 'finished' WHERE TournamentID = :id");
-//		$stmt->execute(["id" => $id]);
+		$pdo->query("ALTER TABLE Tournament 
+									  ADD CONSTRAINT TournamentParticipant_ibfk_1 
+									  FOREIGN KEY (TournamentID) 
+									  REFERENCES TournamentParticipant(TournamentID) 
+  									  ON DELETE CASCADE;");
+
+		$stmt = $pdo->prepare("DELETE FROM Tournament WHERE TournamentID = :id");
+		$stmt->execute(["id" => $id]);
 
 		error_log("tournament deleted");
 	}

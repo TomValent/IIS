@@ -19,68 +19,70 @@
 		error("Error in loading old tournament information. Please try again");
 	}
 
-    if (!empty($_POST['name']) && !empty($_POST['start']) && !empty($_POST['type']) && !empty($_POST['participants'])) {
-        error_log("i am in");
+    if ($info["ProgressState"] === "unstarted") {
+		if (!empty($_POST['name']) && !empty($_POST['start']) && !empty($_POST['type']) && !empty($_POST['participants'])) {
+			error_log("i am in");
 
-        error_log("timezone: " . date_default_timezone_get());
-        error_log("time: ". date('m/d/Y h:i:s a', time()));
-        error_log("start: ". date('m/d/Y h:i:s a', strtotime($_POST['start'])));
+			error_log("timezone: " . date_default_timezone_get());
+			error_log("time: ". date('m/d/Y h:i:s a', time()));
+			error_log("start: ". date('m/d/Y h:i:s a', strtotime($_POST['start'])));
 
-        if ($_POST['type'] === "team") {
-            if (!empty($_POST['min']) && !empty($_POST['max'])) {
-                if (intval($_POST["participants"]) <= 0 || intval($_POST["min"]) <= 0 || intval($_POST["max"]) <= 0) {
-                    error("Too little participants or team members");
-                }
-                if (intval($_POST["participants"]) < 2*intval($_POST["max"]) || intval($_POST["max"] < intval($_POST["min"]))) {
-                    error("Minimum is 2 teams and maximum must be bigger than minimum");
-                }
-            }
-        }
+			if ($_POST['type'] === "team") {
+				if (!empty($_POST['min']) && !empty($_POST['max'])) {
+					if (intval($_POST["participants"]) <= 0 || intval($_POST["min"]) <= 0 || intval($_POST["max"]) <= 0) {
+						error("Too little participants or team members");
+					}
+					if (intval($_POST["participants"]) < 2*intval($_POST["max"]) || intval($_POST["max"] < intval($_POST["min"]))) {
+						error("Minimum is 2 teams and maximum must be bigger than minimum");
+					}
+				}
+			}
 
-        if (time() >= intval(strtotime($_POST['start'])) - 3600) {
-            error("Tournament must start in future");
-        }
+			if (time() >= intval(strtotime($_POST['start'])) - 3600) {
+				error("Tournament must start in future");
+			}
 
-//        if ($info["Name"] !== $_POST["name"]) {
-//
-//        }     //toto netreba, staci skontrolovane hodnoty hodit do $data a zavolat update miesto insert
+			$data = [
+				'id' => $_GET['id'],
+				'name' => $_POST['name'],
+				'startTime' => $_POST['start'],
+				'type' => $_POST['type'],
+				'participantCount' => intval($_POST['participants']),
+				'maxCountTeam' => intval($_POST['max']),
+				'minCountTeam' => intval($_POST['min']),
+			];
 
-        $data = [
-            'name' => $_POST['name'],
-            'startTime' => $_POST['start'],
-            'type' => $_POST['type'],
-            'participantCount' => intval($_POST['participants']),
-            'maxCountTeam' => intval($_POST['max']),
-            'minCountTeam' => intval($_POST['min']),
-        ];
+			if (empty($_POST['description'])) {
+				$data["description"] = "";
+			} else {
+				$data["description"] = $_POST['description'];
+			}
 
-        if (empty($_POST['description'])) {
-            $data["description"] = "";
-        } else {
-            $data["description"] = $_POST['description'];
-        }
+			if (empty($_POST['price'])) {
+				$data["price"] = "None";
+			} else {
+				$data["price"] = $_POST['price'];
+			}
 
-        if (empty($_POST['price'])) {
-            $data["price"] = "None";
-        } else {
-            $data["price"] = $_POST['price'];
-        }
+			$pdo = createDB();
 
-        $data["creatorID"] = $_SESSION["id"];
+			$sql = "UPDATE Tournament ".
+				"SET Name = :name, StartTime = :startTime, Description = :description, Price = :price, ".
+				"Type = :type, ParticipantCount = :participantCount, MaxCountTeam = :maxCountTeam, MinCountTeam = :minCountTeam ".
+				"WHERE TournamentID = :id";
 
-        $pdo = createDB();
-
-        $sql = "INSERT INTO Tournament VALUES (default, :name, :creatorID, :startTime, :description, :price, :type, :participantCount, :maxCountTeam, :minCountTeam, :approvalState, :progressState)";
-
-        try {
-            $stmt= $pdo->prepare($sql);
-            $stmt->execute($data);
-        } catch (Exception $e) {
-            error("Error in creating tournament. Please try again");
-        }
-        echo "Tournament edited!";
-	} else if (!empty($_POST["submitted"])) {
-        error("Tournament not edited. Missing required information.");
+			try {
+				$stmt= $pdo->prepare($sql);
+				$stmt->execute($data);
+			} catch (Exception $e) {
+				error("Error in editing tournament. Please try again");
+			}
+			echo "Tournament edited!";
+		} else if (!empty($_POST["submitted"])) {
+			error("Tournament not edited. Missing required information.");
+		}
+	} else {
+        echo "You can't edit started or finished tournament!";
     }
 ?>
 <div class='right'>
@@ -88,6 +90,7 @@
         echo "<button><a href='/index.php/tournament?id=".$_GET['id']."'>Go back to tournament detail</a></button>";
     ?>
 </div>
+<?php if ($info["ProgressState"] === "unstarted"): ?>
 <p>If you choose type Member, min and max team members fields are not required.</p>
 <form class="table" method="post">
     <table>
@@ -178,3 +181,4 @@
         <input type="submit" value="Submit" href="/index.php/tournaments" />
     </div>
 </form>
+<?php endif ?>
