@@ -3,12 +3,12 @@
     {
         echo $msg;
 		echo "  <div class='right'>
-                        <button><a href='/index.php/tournament?id=".$_GET['id']."'>Go back to tournament detail</a></button>
+                        <button><a href='tournament?id=".$_GET['id']."'>Go back to tournament detail</a></button>
                 </div>";
 		exit;
     }
     $pdo = createDB();
-    $sql = "SELECT * FROM Tournament WHERE TournamentID = :id";
+    $sql = "SELECT TournamentID FROM Tournament";
     $info = [];
 
     try {
@@ -27,14 +27,15 @@
 			error_log("time: ". date('m/d/Y h:i:s a', time()));
 			error_log("start: ". date('m/d/Y h:i:s a', strtotime($_POST['start'])));
 
-			if ($_POST['type'] === "team") {
-				if (!empty($_POST['min']) && !empty($_POST['max'])) {
-					if (intval($_POST["participants"]) <= 0 || intval($_POST["min"]) <= 0 || intval($_POST["max"]) <= 0) {
-						error("Too little participants or team members");
-					}
-					if (intval($_POST["participants"]) < 2*intval($_POST["max"]) || intval($_POST["max"] < intval($_POST["min"]))) {
-						error("Minimum is 2 teams and maximum must be bigger than minimum");
-					}
+			if (!empty($_GET['min']) && !empty($_GET['max'])) {
+				if (intval($_GET["participants"]) <= 0 || intval($_GET["min"]) <= 0 || intval($_GET["max"]) <= 0) {
+					error("Too little participants or team members");
+				}
+			}
+
+			if ($_GET['type'] === "team") {
+				if (intval($_GET["max"] < intval($_GET["min"]))) {
+					error("Maximum must be bigger than minimum");
 				}
 			}
 
@@ -87,16 +88,22 @@
 ?>
 <div class='right'>
     <?php
-        echo "<button><a href='/index.php/tournament?id=".$_GET['id']."'>Go back to tournament detail</a></button>";
+        echo "<button><a href='tournament?id=".$_GET['id']."'>Go back to tournament detail</a></button>";
     ?>
 </div>
 <?php if ($info["ProgressState"] === "unstarted"): ?>
-<p>If you choose type Member, min and max team members fields are not required.</p>
+<p>
+    <span class="red">*</span>
+    <span>
+    indicates a required field</br>
+        If you choose type Member, min and max team members fields are not required.
+</span>
+</p>
 <form class="table" method="post">
     <table>
         <tr>
             <td>
-                <label class="strong" for="name">Name</label>
+                <span class="red">*</span><label class="strong" for="name">Name</label>
             </td>
             <td>
                 <?php
@@ -106,7 +113,7 @@
         </tr>
         <tr>
             <td>
-                <label class="strong" for="startTime">Start time</label>
+                <span class="red">*</span><label class="strong" for="startTime">Start time</label>
             </td>
             <td>
 				<?php
@@ -126,7 +133,7 @@
         </tr>
         <tr>
             <td>
-                <label class="strong" for="type">Type</label>
+                <span class="red">*</span><label class="strong" for="type">Type</label>
             </td>
             <td>
                 <select class="select" name="type">
@@ -137,7 +144,7 @@
         </tr>
         <tr>
             <td>
-                <label class="strong" for="ParticipantCount">Participant count</label>
+                <span class="red">*</span><label class="strong" for="ParticipantCount">Participant count</label>
             </td>
             <td>
 				<?php
@@ -147,7 +154,7 @@
         </tr>
         <tr>
             <td>
-                <label class="strong" for="MaxCountTeam">Max team members</label>
+                <span class="red">*</span><label class="strong" for="MaxCountTeam">Max team members</label>
             </td>
             <td>
 				<?php
@@ -157,7 +164,7 @@
         </tr>
         <tr>
             <td>
-                <label class="strong" for="MaxCountTeam">Min team members</label>
+                <span class="red">*</span><label class="strong" for="MaxCountTeam">Min team members</label>
             </td>
             <td>
 				<?php
@@ -178,7 +185,7 @@
     </table>
     <div class="center">
         <input type="hidden" name="submitted" value="submitted">
-        <input type="submit" value="Submit" href="/index.php/tournaments" />
+        <input type="submit" value="Submit" href="tournaments" />
     </div>
 </form>
 <?php endif ?>

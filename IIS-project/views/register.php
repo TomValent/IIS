@@ -30,11 +30,11 @@
             }
         </script>
         <form class="form" method="post" action=<?php echo url("/api.php/user/register") ?>>
-            <label for="username">Username</label></br>
+            <span class="red">*</span><label for="username">Username</label></br>
             <input class="input" type="text" id="username" name="username"><br><br>
-            <label for="login">Login</label></br>
+            <span class="red">*</span><label for="login">Login</label></br>
             <input class="input" type="text" id="login" name="login"><br><br>
-            <label for="pass">Password</label></br>
+            <span class="red">*</span><label for="pass">Password</label></br>
             <input class="input" type="password" id="pass" name="pass"><br><br>
             <input type="button" value="Submit" onclick="onRegisterSubmit(this.form)"/>
         </form>

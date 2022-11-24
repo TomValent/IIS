@@ -1,5 +1,5 @@
 <div class='right'>
-    <button><a href='/index.php/tournaments'>Back to tournaments</a></button>
+    <button><a href='tournaments'>Back to tournaments</a></button>
 </div>
 <script>
 
@@ -170,6 +170,7 @@
 
     try {
         $id = $_GET['id'];
+        echo '<script>startTournament(' . $id . ')</script>';
         $pdo = createDB();
 
         $stmt = $pdo->prepare("SELECT * FROM Tournament WHERE TournamentID=:id");
@@ -197,9 +198,7 @@
             echo '<div id="tournament_management" style="display: inline">';
 			if ($tournament_owner) {
                 if (isset($_SESSION["isAdmin"])){
-					if ($tournament['ProgressState'] == 'unstarted') {
-						echo '<button onclick="startTournament(' . $id . ')">Start tournament</button>';
-					} else if ($tournament['ProgressState'] == 'ongoing' && isset($_POST["finished"])) {
+					if ($tournament['ProgressState'] == 'ongoing' && isset($_POST["finished"])) {
 						echo '<button onclick="endTournament(' . $id . ')">End tournament</button>';
                     }
                 }
@@ -250,6 +249,7 @@
 					echo '<button onclick="leaveTournament(' . $id . ')">Leave</button>';
 				}
 			}
+            echo "</br></br>";
 			echo '</div>';
 		}
 

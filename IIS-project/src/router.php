@@ -31,7 +31,7 @@ class Router {
 			";
 		} else {
 			echo "<div class='right'>
-            		<button><a href='/index.php'>Back to welcome page</a></button>
+            		<button><a href='index'>Back to welcome page</a></button>
         		</div>";
 		}
 

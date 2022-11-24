@@ -4,7 +4,7 @@
     {
         echo $msg;
 		echo "  <div class='right'>
-                        <button><a href='/index.php/tournaments'>Go back to tournaments</a></button>
+                        <button><a href='tournaments'>Go back to tournaments</a></button>
                 </div>";
 		exit;
     }
@@ -16,14 +16,15 @@
 		error_log("time: ". date('m/d/Y h:i:s a', time()));
 		error_log("start: ". date('m/d/Y h:i:s a', strtotime($_GET['start'])));
 
+		if (!empty($_GET['min']) && !empty($_GET['max'])) {
+			if (intval($_GET["participants"]) <= 0 || intval($_GET["min"]) <= 0 || intval($_GET["max"]) <= 0) {
+				error("Too little participants or team members");
+			}
+        }
+
         if ($_GET['type'] === "team") {
-			if (!empty($_GET['min']) && !empty($_GET['max'])) {
-				if (intval($_GET["participants"]) <= 0 || intval($_GET["min"]) <= 0 || intval($_GET["max"]) <= 0) {
-					error("Too little participants or team members");
-				}
-				if (intval($_GET["participants"]) < 2*intval($_GET["max"]) || intval($_GET["max"] < intval($_GET["min"]))) {
-					error("Minimum is 2 teams and maximum must be bigger than minimum");
-				}
+            if (intval($_GET["max"] < intval($_GET["min"]))) {
+                error("Maximum must be bigger than minimum");
             }
         }
 
@@ -58,7 +59,7 @@
 
         $pdo = createDB();
 
-        $sql = "INSERT INTO Tournament VALUES (default, :name, :creatorID, :startTime, :description, :price, :type, :participantCount, :maxCountTeam, :minCountTeam, :approvalState, :progressState)";
+        $sql = "INSERT INTO Tournament VALUES (default, :name, :creatorID, :startTime, :description, :price, :type, :participantCount, :maxCountTeam, :minCountTeam, default, default, :approvalState, :progressState)";
 
 		try {
 			$stmt= $pdo->prepare($sql);
@@ -68,21 +69,24 @@
         }
         echo "Tournament created!";
     }  else if (!empty($_GET["submitted"])) {
-		error_log("i am in else");
-		error("Tournament not edited. Missing required information.");
-	} else {
-		error_log("i am in despair");
-    }
+		error("Tournament not created. Missing required information.");
+	}
 ?>
 <div class='right'>
-    <button><a href='/index.php/tournaments'>Go back</a></button>
+    <button><a href='tournaments'>Go back</a></button>
 </div>
-<p>If you choose type Member, min and max team members fields are not required.</p>
+<p>
+    <span class="red">*</span>
+    <span>
+        indicates a required field</br>
+        If you choose type Member, min and max team members fields are not required.
+    </span>
+</p>
 <form class="table" method="get">
     <table>
         <tr>
             <td>
-                <label class="strong" for="name">Name</label>
+                <span class="red">*</span><label class="strong" for="name">Name</label>
             </td>
             <td>
                 <input type="text" class="padd" name="name">
@@ -90,7 +94,7 @@
         </tr>
         <tr>
             <td>
-                <label class="strong" for="startTime">Start time</label>
+                <span class="red">*</span><label class="strong" for="startTime">Start time</label>
             </td>
             <td>
                 <input type="datetime-local" name="start">
@@ -106,7 +110,7 @@
         </tr>
         <tr>
             <td>
-                <label class="strong" for="type">Type</label>
+                <span class="red">*</span><label class="strong" for="type">Type</label>
             </td>
             <td>
                 <select class="select" name="type">
@@ -117,7 +121,7 @@
         </tr>
         <tr>
             <td>
-                <label class="strong" for="ParticipantCount">Participant count</label>
+                <span class="red">*</span><label class="strong" for="ParticipantCount">Participant count</label>
             </td>
             <td>
                 <input type="number" class="padd" name="participants">
@@ -125,7 +129,7 @@
         </tr>
         <tr>
             <td>
-                <label class="strong" for="MaxCountTeam">Max team members</label>
+                <span class="red">*</span><label class="strong" for="MaxCountTeam">Max team members</label>
             </td>
             <td>
                 <input type="number" class="padd" name="max">
@@ -133,7 +137,7 @@
         </tr>
         <tr>
             <td>
-                <label class="strong" for="MaxCountTeam">Min team members</label>
+                <span class="red">*</span><label class="strong" for="MaxCountTeam">Min team members</label>
             </td>
             <td>
                 <input type="number" class="padd" name="min">
@@ -150,6 +154,6 @@
     </table>
     <div class="center">
         <input type="hidden" name="submitted" value="submitted">
-        <input type="submit" value="Create" href="/index.php/tournaments" />
+        <input type="submit" value="Create" href="tournaments" />
     </div>
 </form>

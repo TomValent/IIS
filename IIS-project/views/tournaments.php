@@ -1,5 +1,5 @@
         <div class='right'>
-            <button><a href='/index.php/page'>Back to main page</a></button>
+            <button><a href='page'>Back to main page</a></button>
         </div>
         <script>
 
@@ -25,7 +25,7 @@
         </br></br>
 		<?php if (isset($_SESSION["login"])): ?>
         <div class="button_container">
-            <button><a href="/index.php/newTournament">Create Tournament</a></button>
+            <button><a href="newTournament">Create Tournament</a></button>
         </div></br>
         <?php endif ?>
         Tournaments:
