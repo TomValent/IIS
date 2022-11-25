@@ -1,6 +1,6 @@
 <?php
 
-const PAGES = ["/page", "/tournaments", "/tournament", "/newTournament", "/players", "/teams"];
+const PAGES = ["/page", "/tournaments", "/tournament", "/newTournament", "/players", "/teams", "/player", "/editAccount"];
 
 class Router {
 
@@ -21,8 +21,10 @@ class Router {
 		$user = "(guest)";
 		if (isset($_SESSION["login"])) {
 			$user = $_SESSION["username"];
+			echo "<div class='right profile'><a href='player?id=". $_SESSION["id"] ."'>User: " . $user . "</a></div>";
+		} else {
+			echo "<div class='right'>User: " . $user . "</div>";
 		}
-		echo "<div class='right'>User: " . $user . "</div>";
 
 		if (isset($_SESSION["login"]) && isset($_SERVER["PATH_INFO"]) && in_array($_SERVER["PATH_INFO"], PAGES)) {
 			echo "	<div class='button_container right'>

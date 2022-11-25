@@ -30,9 +30,9 @@
         </script>
         <form class="form" method="post" action=<?php echo url("/api.php/user/login") ?>>
             <span class="red">*</span><label for="login">Login</label></br>
-            <input class="input" type="text" id="login" name="login"><br><br>
+            <input class="input" type="text" id="login" name="login"></br></br>
             <span class="red">*</span><label for="pass">Password</label></br>
-            <input class="input" type="password" id="pass" name="pass"><br><br>
+            <input class="input" type="password" id="pass" name="pass"></br></br>
             <input type="button" value="Submit" onclick="onLoginSubmit(this.form)"/>
         </form>
         <div id="result"></div>

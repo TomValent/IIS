@@ -1,10 +1,19 @@
+html {
+    background: #787878;
+}
+
 body {
     font-family: 'Poppins';
     font-size: 1.2em;
+    width:75%;
+    margin: auto;
+    background: whitesmoke;
+    padding: 50px;
+    padding-bottom: 560px;
 }
 
 .button_container {
-    padding-bottom: 50px;
+    padding-bottom: 5px;
     display: inline-block;
 }
 
@@ -16,7 +25,7 @@ button {
     font-weight: 400;
 }
 
-button a {
+a {
     text-decoration: none;
     color: black;
 }
@@ -45,6 +54,18 @@ h1 {
 .form {
     width: 20%;
     height: 50%;
+    margin: auto;
+    margin-top: 10%;
+    text-align: center;
+    border: solid 1px black;
+    border-radius: 30px;
+    padding: 20px;
+    box-shadow: 1px 2px;
+}
+
+.twoForms {
+    width: 45%;
+    height: 65%;
     margin: auto;
     margin-top: 10%;
     text-align: center;
@@ -158,4 +179,28 @@ tr:nth-child(2n) {
 
 .red {
     color: red;
+}
+
+.row {
+    display: flex;
+}
+
+.column {
+    flex: 50%;
+}
+
+.profile {
+    margin-bottom: 10px;
+}
+
+.profile a{
+    margin-right: 1px;
+    padding: 5px;
+}
+
+.profile a:hover {
+    margin-right: 0;
+    border: solid 1px black;
+    border-radius: 5px;
+    background-color: rgb(235, 235, 235);
 }

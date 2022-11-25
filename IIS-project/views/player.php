@@ -45,3 +45,21 @@
         </td>
     </tr>
 </table>
+<script>
+    function deleteMember(id) {
+        let data = {
+            id: id
+        }
+        api.post({
+            url: <?php echo url("/api.php/user/delete") ?>,
+            data: data,
+        })
+    }
+</script>
+<?php
+    if ($_SESSION["id"] === intval($_GET["id"])) {
+		$_GET["edit"] = "true";
+        echo "<div class='right'><button><a href='editAccount?id=". $_GET["id"] ."&edit=true'>Edit account</a></button></div>";
+        echo "<button onclick='deleteMember(" . $_GET["id"] . ")'>Delete account</button>";
+    }
+?>

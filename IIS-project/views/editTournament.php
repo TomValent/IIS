@@ -2,6 +2,7 @@
     function error(string $msg): void
     {
         echo $msg;
+		unset($_GET["edit"]);
 		echo "  <div class='right'>
                         <button><a href='tournament?id=".$_GET['id']."'>Go back to tournament detail</a></button>
                 </div>";
@@ -15,7 +16,7 @@
         $stmt = $pdo->prepare($sql);
         $stmt->execute(["id" => $_GET["id"]]);
 		$info = $stmt->fetch();
-	} catch (Exception $e) {
+	} catch (PDOException|Exception $e) {
 		error("Error in loading old tournament information. Please try again");
 	}
 
@@ -75,7 +76,7 @@
 			try {
 				$stmt= $pdo->prepare($sql);
 				$stmt->execute($data);
-			} catch (Exception $e) {
+			} catch (PDOException|Exception $e) {
 				error("Error in editing tournament. Please try again");
 			}
 			echo "Tournament edited!";

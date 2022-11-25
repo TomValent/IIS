@@ -111,4 +111,13 @@ class UserController extends BaseController
 		return $result;
 	}
 
+	public function deleteAction(): void
+	{
+		$this->checkRequestMethod('GET');
+
+		$id = $_SESSION["id"];
+
+
+		error_log("Account delete");
+	}
 }
