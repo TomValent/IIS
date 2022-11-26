@@ -15,12 +15,12 @@ if (isset($_SESSION["login"])) {
 
 if (isset($_SESSION["login"]) && isset($_SERVER["PATH_INFO"]) && in_array($_SERVER["PATH_INFO"], PAGES)) {
 	 echo "  <div class='button_container right'>
-				 <button><a onclick='logout()'>Log out</a></button>
+				 <a onclick='logout()'><button>Log out</button></a>
 			 </div>
 	 ";
 } else {
 	echo "<div class='right'>
-			  <button><a href='index'>Back to welcome page</a></button>
+			  <a href='index'><button>Back to welcome page</button></a>
 		  </div>";
 }
 

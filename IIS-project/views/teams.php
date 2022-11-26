@@ -56,7 +56,7 @@ if (isset($_POST['deleteTeam'])) {
 
 <?php if (isset($_SESSION["login"])): ?>
     <div class="button_container">
-        <button><a href="/index.php/newTeam">Create Team</a></button>
+        <button><a href="index.php/newTeam">Create Team</a></button>
     </div></br>
 <?php endif ?>
 <div id="teams"></div>

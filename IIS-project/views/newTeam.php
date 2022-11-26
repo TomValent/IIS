@@ -6,7 +6,7 @@ function error(string $msg): void
 {
     echo $msg;
     echo "  <div class='right'>
-                        <button><a href='/index.php/teams'>Go back to teams</a></button>
+                        <button><a href='index.php/teams'>Go back to teams</a></button>
                     </div>";
     exit;
 }
@@ -54,7 +54,7 @@ if($_POST['submitTeam']) {
 }
 ?>
 <div class='right'>
-    <button><a href='/index.php/teams'>Go back</a></button>
+    <button><a href='index.php/teams'>Go back</a></button>
 </div>
 <form action = "newTeam" class="table" method="post" enctype="multipart/form-data">
     <table>

@@ -1,5 +1,5 @@
 <div class='right'>
-    <button><a href='/index.php/teams'>Back to teams</a></button>
+    <button><a href='index.php/teams'>Back to teams</a></button>
 </div>
 <?php
 

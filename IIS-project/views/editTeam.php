@@ -53,7 +53,7 @@ if($_POST['editTeam']) {
 }
 ?>
 <div class='right'>
-    <button><a href='/index.php/teams'>Go back</a></button>
+    <button><a href='index.php/teams'>Go back</a></button>
 </div>
 <form class="table" method="post" enctype="multipart/form-data">
     <table>
