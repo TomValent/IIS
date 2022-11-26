@@ -95,6 +95,16 @@
         }
     }
 
+    function deleteTournament() {
+        let data = {
+            id: ID
+        }
+        api.post({
+            url: <?php echo url("/api.php/tournament/delete") ?>,
+            data: data,
+        })
+    }
+
     function leaveTournament(team_id) {
         let data = {
             id: ID
@@ -377,7 +387,7 @@
 <div id="startModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <p>Tournament creation</p>
+        <p>Match creation</p>
         <div id="startContent">
         </div>
         <button id="confirmButton">Confirm</button>

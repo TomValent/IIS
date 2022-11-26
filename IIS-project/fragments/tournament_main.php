@@ -56,7 +56,8 @@ try {
 			}
 		}
 		if ($tournament_owner || isAdmin()) {
-			echo '<button>Edit tournament</button>';
+			$_GET["edit"] = "true";
+			echo '<a href="editTournament?id=' . $id . '&edit=true"><button>Edit tournament</button></a>';
 			echo '<button onclick="deleteTournament()">Delete tournament</button>';
 		}
 

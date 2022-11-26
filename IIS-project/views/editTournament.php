@@ -16,7 +16,6 @@
     $pdo = createDB();
     $sql = "SELECT * FROM Tournament WHERE TournamentID = :id";
     $info = [];
-
     try {
         $stmt = $pdo->prepare($sql);
         $stmt->execute(["id" => $_GET["id"]]);
