@@ -80,12 +80,15 @@ class BaseController
 	{
 		try {
 			$data = $this->{$method}();
-
 			$this->sendOutput($data, array('HTTP/1.1 200 OK'));
 		}
 		catch (MethodException $e) {
 			error_log("error: ". $e->getMessage());
 			$this->sendError($e->getMessage(), $e->getStatus());
+		}
+		catch(PDOException $e){
+			error_log("db error: ". $e->getMessage());
+			$this->sendError('Database error', 'HTTP/1.1 500 Internal Server Error');
 		}
 		catch (Throwable $e) {
 			 error_log("error: ". $e->getMessage());
@@ -120,9 +123,19 @@ class BaseController
 	 */
 	protected function checkLoggedIn(): void
 	{
-		if (!isset($_SESSION["id"])) {
+		$user_id = getUserID();
+		if ($user_id === NULL) {
 			throw new MethodException("Missing user info");
 		}
+	}
+
+	/**
+	 * @throws MethodException
+	 */
+	protected function getLoggedUserID()
+	{
+		$this->checkLoggedIn();
+		return getUserID();
 	}
 
 	/**
@@ -135,5 +148,16 @@ class BaseController
 		}
 	}
 
+	/**
+	 * @throws MethodException
+	 */
+	protected function getMatch($id, $tournament_id)
+	{
+		$match = Database::getInstance()->getMatchByID($id, $tournament_id);
+		if (!$match) {
+			throw new MethodException("Match does not exist");
+		}
+		return $match;
+	}
 
 }

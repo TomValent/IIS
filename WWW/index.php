@@ -1,5 +1,6 @@
 <?php
 require_once "../IIS-project/inc/bootstrap.php";
-require_once PRJ_DIR . '/src/router.php';
+require_once "../IIS-project/src/router.php";
 
-Router::route($_SERVER['REQUEST_URI']);
+error_log("[router] ".parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+Router::route(parseUrl($_SERVER['REQUEST_URI']));

@@ -1,33 +1,11 @@
         <div class='right'>
-            <button><a href='page'>Back to main page</a></button>
+            <a href='page'><button>Back to main page</button></a>
         </div>
         <script>
-
-            function getTournaments() {
-                api.get({
-                    url: <?php echo url("/api.php/tournament/list") ?>,
-                    success: (data) => {
-                        $('#tournaments').html(data.body)
-                    }
-                })
+            function onLoad() {
+                getContent("../index.php/frags/tournament_list", "#content")
             }
-
-            function onLogout() {
-                getTournaments()
-            }
-
-            // initialize jQuery
-            $(function() {
-                getTournaments()
-            });
-
+            $(onLoad())
         </script>
-        </br></br>
-		<?php if (isset($_SESSION["login"])): ?>
-        <div class="button_container">
-            <button><a href="newTournament">Create Tournament</a></button>
-        </div></br>
-        <?php endif ?>
-        Tournaments:
-        <div id="tournaments"></div>
+        <div id="content"></div>
 

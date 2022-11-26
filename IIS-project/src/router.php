@@ -1,7 +1,5 @@
 <?php
 
-const PAGES = ["/page", "/tournaments", "/tournament", "/newTournament", "/players", "/teams", "/player", "/editAccount"];
-
 class Router {
 
 	private static function error(): void
@@ -11,80 +9,65 @@ class Router {
 		die();
 	}
 
-	private static function show($file): void
+	private static function show($file, $wrap): void
 	{
 		// website start
-		echo "<!DOCTYPE html>";
-		echo "<html>";
-		require_once "website_header.php";
-		echo "	<body>";
-		$user = "(guest)";
-		if (isset($_SESSION["login"])) {
-			$user = $_SESSION["username"];
-			echo "<div class='right profile'><a href='player?id=". $_SESSION["id"] ."'>User: " . $user . "</a></div>";
-		} else {
-			echo "<div class='right'>User: " . $user . "</div>";
+		if ($wrap) {
+			echo "<!DOCTYPE html>";
+			echo "<html>";
+			require_once "website_header.php";
+			?>
+			<body>
+            <div class="menu" id="page-menu"></div>
+            <div id="inactivityModal" class="modal">
+				<div class="modal-content" style="justify-content: center;">
+                    <span style="white-space: nowrap;">you will be logged out in 1 minute due to inactivity</span>
+                    <span class="close">cancel</span>
+				</div>
+			</div>
+			<?php
 		}
-
-		if (isset($_SESSION["login"]) && isset($_SERVER["PATH_INFO"]) && in_array($_SERVER["PATH_INFO"], PAGES)) {
-			echo "	<div class='button_container right'>
-            			<button><a onclick='logout()'>Log out</a></button>
-        			</div>
-			";
-		} else {
-			echo "<div class='right'>
-            		<button><a href='index'>Back to welcome page</a></button>
-        		</div>";
-		}
-
 		// page content
-		require VIEWS_DIR."/".$file;
+		require_once $file;
 		// website end
-		echo "	</body>";
-		echo "</html>";
+		if ($wrap) {
+			echo "	</body>";
+			echo "</html>";
+		}
+		exit();
+	}
 
+	private static function find($dir, $target, $wrap) {
+		foreach (new DirectoryIterator($dir) as $fileInfo) {
+			if(!$fileInfo->isDot()) {
+				$file = $fileInfo->getFilename();
+				if ($target == $file) {
+					Router::show($dir ."/". $file, $wrap);
+				}
+			}
+		}
 	}
 
 	public static function route($request): void
 	{
-		if (str_starts_with($request, "/~") && strlen($request) >= 10) {
-			$request = substr($request, 10);
+		if(count($request) == 0) {
+			Router::show(VIEWS_DIR."/index.php", true);
 		}
-
-		if (strlen($request) == 0 || $request == "/" || $request == "/index.php") {
-			Router::show("index.php");
+		if(count($request) == 1 && ($request[0] == "" || $request[0] == "index.php")) {
+			Router::show(VIEWS_DIR."/index.php", true);
+		}
+		if ($request[0] != "index.php") {
+			Router::error();
+		}
+		if (count($request) > 2 && $request[1] == "frags") {
+			$target = $request[2] . ".php";
+			Router::find(FRAGS_DIR, $target, false);
 		}
 		else {
-
-			if (!str_starts_with($request, "/index.php/")) {
-				error_log("invalid request: ".$request);
-				Router::error();
-			}
-			$request = substr($request, strlen("/index.php/"));
-
-			$target = $request;
-			$pos = strpos($request , "?");
-			if (!$pos) {
-				$pos = strpos($request , "/");
-			}
-			if ($pos) {
-				$target = substr($request, 0, $pos);
-			}
-
-			if (strpos($target, ".")) {
-				error_log("invalid request: (has dot) ".$request);
-				Router::error();
-			}
-			$target .= ".php";
-
-			foreach (new DirectoryIterator(VIEWS_DIR) as $fileInfo) {
-				if(!$fileInfo->isDot()) {
-					$file = $fileInfo->getFilename();
-					if (str_contains($target, $file)) {
-						Router::show($file);
-					}
-				}
-			}
+			$target = $request[1] . ".php";
+			Router::find(VIEWS_DIR, $target, true);
 		}
+
+		Router::error();
 	}
 }
