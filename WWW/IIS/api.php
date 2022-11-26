@@ -1,6 +1,6 @@
 <?php
 
-require_once "../IIS-project/inc/bootstrap.php";
+require_once "../../IIS-project/inc/bootstrap.php";
 require_once PRJ_DIR . '/controller/api/base-controller.php';
 require_once PRJ_DIR . "/controller/api/tournament-controller.php";
 require_once PRJ_DIR . "/controller/api/team-controller.php";
@@ -25,6 +25,7 @@ function getController($method)
 }
 
 $uri = parseUrl($_SERVER['REQUEST_URI']);
+
 if (count($uri) < 3) {
     header("HTTP/1.1 404 Not Found");
     exit();

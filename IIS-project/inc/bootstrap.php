@@ -14,6 +14,7 @@ function url($url): string
 
 function parseUrl($uri)
 {
+
 	$uri = parse_url($uri, PHP_URL_PATH);
 	$uri = explode('/', $uri);
 
@@ -23,8 +24,18 @@ function parseUrl($uri)
 	}
 	// remove root /
 	array_shift($uri);
-    if ("/".$uri[0] == $GLOBALS["url_prefix"]) {
+	$prefix = "";
+	foreach (explode('/', $GLOBALS["url_prefix"]) as $p) {
+		if (str_starts_with($p, "~x")) {
+			$prefix = $p;
+		}
+	}
+	if ($uri[0] == $prefix) {
 		// remove login if on eva
+		array_shift($uri);
+	}
+	if ($uri[0] == "IIS") {
+		// remove IIS
 		array_shift($uri);
 	}
     return $uri;

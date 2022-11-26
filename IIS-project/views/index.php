@@ -3,8 +3,8 @@
 </div>
 <div class="authenticate">
 	<p>Are you registered?</p>
-    <a href="index.php/login"><button class="button_big">Log in</button></a>
+    <a href=<?php echo url("/index.php/login")?>><button class="button_big">Log in</button></a>
 	<p>Are you new here?</p>
-    <a href="index.php/register"><button class="button_big">Create new account</button></a>
-    <a href="index.php/page"><button class="button_big">Continue as guest</button></a>
+    <a href=<?php echo url("/index.php/register")?>><button class="button_big">Create new account</button></a>
+    <a href=<?php echo url("/index.php/page")?>><button class="button_big">Continue as guest</button></a>
 </div>

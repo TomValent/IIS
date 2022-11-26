@@ -16,7 +16,6 @@
                 $.ajax({
                     type: request.type,
                     url: request.url,
-                    // dataType: 'json'
                     data: data,
                     success: (obj)=>{
                         console.log('request success (' + request.url + ')')
@@ -68,12 +67,12 @@
         }
 
         function loadMenu() {
-            getContent("../index.php/frags/page_menu", "#page-menu", {'url': window.location.pathname})
+            getContent(<?php echo url("/index.php/frags/page_menu")?>, "#page-menu", {'url': window.location.pathname})
         }
 
         function logout() {
             api.get({
-                url: "../api.php/user/logout",
+                url: <?php echo url("../api.php/user/logout")?>,
                 success: ()=> {
                     if (typeof onLogout === "function") {
                         onLogout()
@@ -88,7 +87,7 @@
             })
 
             api.get({
-                url: "../api.php/user/logged_user",
+                url: <?php echo url("../api.php/user/logged_user")?>,
                 success: (data)=> {
                     if (typeof data.username !== "undefined") {
 
