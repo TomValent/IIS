@@ -2,11 +2,15 @@
 
     function error(string $msg): void
     {
-        echo $msg;
 		echo "  <div class='right'>
                         <button><a href='tournaments'>Go back to tournaments</a></button>
                 </div>";
+		echo $msg;
 		exit;
+	}
+
+    if (!isset($_SESSION["id"])) {
+        error("You are not logged in");
     }
 
     if (!empty($_GET['name']) && !empty($_GET['start']) && !empty($_GET['type']) && !empty($_GET['participants'])) {

@@ -269,8 +269,10 @@
 		foreach ($participants as $p) {
 			if ($p['AcceptanceState'] == 'approved') {
 				echo $p['Name'];
-				echo '<button onclick="revokeParticipant(' . $id . ', ' . $p['TournamentParticipantID'] . ')">Revoke</button>';
-				echo '<button onclick="kickParticipant(' . $id . ', ' . $p['TournamentParticipantID'] . ')">Kick</button>';
+				if (isset($_SESSION["login"])) {
+					echo '<button onclick="revokeParticipant(' . $id . ', ' . $p['TournamentParticipantID'] . ')">Revoke</button>';
+					echo '<button onclick="kickParticipant(' . $id . ', ' . $p['TournamentParticipantID'] . ')">Kick</button>';
+				}
 				echo '<br>';
 			}
 		}

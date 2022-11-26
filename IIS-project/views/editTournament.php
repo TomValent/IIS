@@ -1,13 +1,18 @@
 <?php
     function error(string $msg): void
     {
-        echo $msg;
 		unset($_GET["edit"]);
 		echo "  <div class='right'>
                         <button><a href='tournament?id=".$_GET['id']."'>Go back to tournament detail</a></button>
                 </div>";
+		echo $msg;
 		exit;
+	}
+
+    if (!isset($_SESSION["id"])) {
+        error("You are not logged in");
     }
+
     $pdo = createDB();
     $sql = "SELECT TournamentID FROM Tournament";
     $info = [];
@@ -86,13 +91,9 @@
 	} else {
         echo "You can't edit started or finished tournament!";
     }
+
+    if ($info["ProgressState"] === "unstarted"):
 ?>
-<div class='right'>
-    <?php
-        echo "<button><a href='tournament?id=".$_GET['id']."'>Go back to tournament detail</a></button>";
-    ?>
-</div>
-<?php if ($info["ProgressState"] === "unstarted"): ?>
 <p>
     <span class="red">*</span>
     <span>

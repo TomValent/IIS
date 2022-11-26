@@ -113,11 +113,19 @@ class UserController extends BaseController
 
 	public function deleteAction(): void
 	{
-		$this->checkRequestMethod('GET');
+		$this->checkRequestMethod('POST');
 
 		$id = $_SESSION["id"];
 
+		$pdo = createDB();
+		$stmt = $pdo->prepare("DELETE FROM Member WHERE MemberID = :id");
+		$stmt->execute(["id" => $_SESSION["id"]]);
+		unset($_SESSION);
+		unset($_GET);
+		unset($_POST);
+		session_destroy();
+		session_write_close();
 
-		error_log("Account delete");
+		error_log("Account deleted");
 	}
 }

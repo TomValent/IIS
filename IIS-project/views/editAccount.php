@@ -1,11 +1,16 @@
 <?php
     function error(string $msg): void
     {
-        echo $msg;
-        unset($_GET["edit"]);
-        echo "  <div class='right'>
+		unset($_GET["edit"]);
+		echo "  <div class='right'>
                             <button><a href='player?id=".$_GET['id']."'>Go back to profile</a></button>
                 </div>";
+		echo $msg;
+		exit;
+	}
+
+    if ($_GET["id"] == NULL) {
+        error("You have no profile");
         exit;
     }
 
@@ -15,7 +20,7 @@
     $pwd = $stmt->fetch(PDO::FETCH_NAMED);
 
     if (!empty($_POST["newUsername"]) && !empty($_POST["pass"])) {
-		if (!password_verify($pwd["Password"], $_POST["pass"])) {
+		if (!password_verify($_POST["pass"], $pwd["Password"])) {
 			error('Wrong password');
 		}
 
@@ -36,7 +41,7 @@
         if ($_POST["oldPass"] === $_POST["newPass"]) {
 			error("New password cannot be same as old password");
         }
-		if (!password_verify($pwd["Password"], $_POST["oldPass"])) {
+		if (!password_verify($_POST["oldPass"], $pwd["Password"])) {
 			error('Wrong password');
 		}
 
