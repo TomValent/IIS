@@ -3,6 +3,7 @@
 require_once "../IIS-project/inc/bootstrap.php";
 require_once PRJ_DIR . '/controller/api/base-controller.php';
 require_once PRJ_DIR . "/controller/api/tournament-controller.php";
+require_once PRJ_DIR . "/controller/api/team-controller.php";
 require_once PRJ_DIR . "/controller/api/user-controller.php";
 
 function getController($method)
@@ -12,6 +13,8 @@ function getController($method)
 			return new UserController();
 		case 'tournament':
 			return new TournamentController();
+        case 'team':
+            return new TeamController();
 		default:
 			header("HTTP/1.1 404 Not Found");
 			exit();
