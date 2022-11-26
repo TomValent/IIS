@@ -1,8 +1,14 @@
-<div class='right'>
-    <button><a href='index.php/teams'>Back to teams</a></button>
-</div>
+
 <?php
 
+function error(string $msg): void
+{
+    echo "  <div class='right'>
+                   <a href='teams'><button>Go back to teams</button></a>
+             </div>";
+    echo $msg;
+    exit;
+}
 
 try{
     $id = $_GET['id'];
@@ -67,9 +73,12 @@ try {
         error('Team does not exist');
         exit();
     }
-    echo $team["Name"];
+    echo "<div class='right'>
+    <button><a href='teams'>Back to teams</a></button>
+</div>";
+    echo '<h1>'.$team["Name"].'</h1>';
     echo '<br>';
-    echo '<img src="'.$team['Image'].'" />';
+    echo '<div class="image">'.'<img src="'.$team['Image'].'" />'.'</div>';
     echo '<br>';
 
     $stmt = $pdo->prepare("SELECT DISTINCT TeamID, MemberID FROM MemberTeam WHERE TeamID=:id");
@@ -82,8 +91,6 @@ try {
         echo $member['Login'].'<br>';
     }
     echo '<br>';
-
-
 } catch (PDOException $e) {
     $result['error'] = "Connection error: " . $e->getMessage();
     die();
@@ -91,10 +98,10 @@ try {
 ?>
 
 <?php if (isset($_SESSION["login"])  &&  $tean_owned ): ?>
-<form method="post" >
-    <label class="strong" for="login">Login</label>
-    <input type="text" name="login">
-    <input type="submit" name="addMember" value="Add"/>
-    <input type="submit" name="deleteMember" value="Delete"/>
-</form>
+    <form method="post" >
+        <label class="strong" for="login">Login</label>
+        <input type="text" name="login">
+        <input type="submit" name="addMember" value="Add"/>
+        <input type="submit" name="deleteMember" value="Delete"/>
+    </form>
 <?php endif ?>

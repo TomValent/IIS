@@ -4,19 +4,19 @@
 define ('SITE_ROOT', realpath(dirname(dirname(dirname(__FILE__)))));
 function error(string $msg): void
 {
-    echo $msg;
     echo "  <div class='right'>
-                        <button><a href='index.php/teams'>Go back to teams</a></button>
-                    </div>";
+                   <a href='teams'><button>Go back to teams</button></a>
+             </div>";
+    echo $msg;
     exit;
 }
 
 
-if($_POST['submitTeam']) {
+if(!empty($_POST['submitTeam'])){
     if (!empty($_POST['name'])) {
         $teamName = $_POST['name'];
         $creatorID = $_SESSION["id"];
-
+        $name = ''; $image = '';
         if (!empty($_FILES['file'])) {
             $name = $_FILES['file']['name'];
             $target_dir = "upload/";
@@ -40,7 +40,6 @@ if($_POST['submitTeam']) {
         try {
             $stmt = $pdo->prepare($sql);
             $stmt->execute();
-            header("Location: teams");
 
         } catch (Exception $e) {
             if ($e->getCode() == 23000) {
@@ -49,18 +48,17 @@ if($_POST['submitTeam']) {
                 error("Error in creating team. Please try again");
             }
         }
-        echo "Team created!";
     }
 }
 ?>
 <div class='right'>
-    <button><a href='index.php/teams'>Go back</a></button>
+    <a href='teams'><button>Go back to teams</button></a>
 </div>
 <form action = "newTeam" class="table" method="post" enctype="multipart/form-data">
     <table>
         <tr>
             <td>
-                <label class="strong" for="name">Name</label>
+                <span class="red">*</span> <label class="strong" for="name">Name</label>
             </td>
             <td>
                 <input type="text" class="padd" name="name">

@@ -1,15 +1,30 @@
 <?php
 
 define ('SITE_ROOT', realpath(dirname(dirname(dirname(__FILE__)))));
+function error(string $msg): void
+{
+    echo "  <div class='right'>
+                   <a href='teams'><button>Go back to teams</button></a>
+             </div>";
+    echo $msg;
+    exit;
+}
 
-$id = $_GET["id"];
-$pdo = createDB();
-$stmt = $pdo->prepare("SELECT * FROM Team WHERE TeamID=:id");
-$stmt->execute(['id' => $id]);
-$team = $stmt->fetch();
-$teamName = $team["Name"];
+try{
+    $id = $_GET['id'];
+    $user_id = $_SESSION["id"];
+    $pdo = createDB();
+    $stmt = $pdo->prepare("SELECT * FROM Team WHERE TeamID=:id");
+    $stmt->execute(['id' => $id]);
+    $team = $stmt->fetch();
+    $teamName = $team["Name"];
+    $tean_owned = $user_id == $team["LeaderID"];
+}catch (PDOException $e) {
+    echo $e->getMessage();
+    die();
+}
 
-if($_POST['editTeam']) {
+if(!empty($_POST['editTeam'])){
     if (!empty($_POST['name'])) {
         $teamName = $_POST['name'];
         $creatorID = $_SESSION["id"];
@@ -24,13 +39,10 @@ if($_POST['editTeam']) {
             }
             else {
                 if (in_array($imageFileType, $extensions_arr)) {
-                    if (move_uploaded_file($_FILES['file']['tmp_name'], SITE_ROOT . "/WWW/data/logo/" . $name)) {
-                        $image_base64 = base64_encode(file_get_contents(SITE_ROOT . "/WWW/data/logo/" . $name));
-                        $image = 'data:image/' . $imageFileType . ';base64,' . $image_base64;
-                    }
-
+                    $image_base64 = base64_encode(file_get_contents($_FILES['file']['tmp_name']));
+                    $image = 'data:image/' . $imageFileType . ';base64,' . $image_base64;
                 }
-                $sql = "UPDATE Team SET Name='$teamName', Logo='$name', Image='$image' WHERE TeamID='$id' ";
+                $sql = "UPDATE Team SET Name='$teamName', Logo='$name', Image='$image' WHERE TeamID='$id'";
             }
         }
         else{
@@ -48,34 +60,35 @@ if($_POST['editTeam']) {
                 error("Error in creating team. Please try again");
             }
         }
-        echo "Team edited!";
     }
 }
 ?>
-<div class='right'>
-    <button><a href='index.php/teams'>Go back</a></button>
-</div>
-<form class="table" method="post" enctype="multipart/form-data">
-    <table>
-        <tr>
-            <td>
-                <label class="strong" for="name">Name</label>
-            </td>
-            <td>
-                <input type="text" class="padd" name="name" value="<?php echo $teamName; ?>">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label class="strong" for="file">Logo</label>
-            </td>
-            <td>
-                <input type="file" class="padd"  name="file">
-            </td>
-        </tr>
-
-    </table>
-    <div class="center">
-        <input type="submit" name="editTeam" value="Edit"/>
+    <div class='right'>
+        <a href='teams'><button>Go back to teams</button></a>
     </div>
-</form>
+<?php if (isset($_SESSION["login"])  &&  $tean_owned ): ?>
+    <form class="table" method="post" enctype="multipart/form-data">
+        <table>
+            <tr>
+                <td>
+                    <span class="red">*</span><label class="strong" for="name">Name</label>
+                </td>
+                <td>
+                    <input type="text" class="padd" name="name" value="<?php echo $teamName; ?>">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="strong" for="file">Logo</label>
+                </td>
+                <td>
+                    <input type="file" class="padd"  name="file">
+                </td>
+            </tr>
+
+        </table>
+        <div class="center">
+            <input type="submit" name="editTeam" value="Edit"/>
+        </div>
+    </form>
+<?php endif ?>

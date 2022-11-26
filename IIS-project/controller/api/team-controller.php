@@ -24,11 +24,6 @@ class TeamController extends BaseController
         if($user_id!=NULL){
             $q = $pdo->query("SELECT TeamID, Name, Logo, Image FROM Team WHERE LeaderID = '$user_id'");
             $data = $q->fetchAll(PDO::FETCH_ASSOC);
-/*
-            $stmt = $pdo->prepaere('SELECT TeamID, Name, Logo, Image FROM Team WHERE CreatorID = :id');
-            $stmt->execute(['id' => $user_id]);
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  */
             $body .= 'My teams:'. '<br>';
             foreach ($data as $row) {
                 $id = $row['TeamID'];
@@ -47,14 +42,14 @@ class TeamController extends BaseController
                     .'<input type="submit" name="deleteTeam" value="Delete"/>'
                     .'</form>'
                     .'<div class="button_container" style="display: inline">'
-                    .'<a href="editTeam?id='. $id .'">Edit</a>'
+                    .'<a href="editTeam?id='. $id .'"><button>Edit</button></a>'
                     .'</div>'
                     .'</a></div></div></div>';
             }
 
             $q = $pdo->query("SELECT TeamID, Name, Logo, Image FROM Team WHERE LeaderID != '$user_id'");
             $data = $q->fetchAll(PDO::FETCH_ASSOC);
-            $body .= 'Other teams:'. '<br>';
+            $body .= '<br>'.'Other teams:'. '<br>';
             foreach ($data as $row) {
                 $id = $row['TeamID'];
                 $body .= '<div class="teamsform"  > '

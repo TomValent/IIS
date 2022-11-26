@@ -1,6 +1,11 @@
 <div class='right'>
-	<button><a href='page'>Back to main page</a></button>
+    <a href='page'><button>Back to main page</button></a>
 </div>
+<?php if (isset($_SESSION["login"])): ?>
+    <div class="button_container">
+        <a href='newTeam'><button>Create Team</button></a>
+    </div></br>
+<?php endif ?>
 
 <?php
 
@@ -22,9 +27,11 @@ if (isset($_POST['deleteTeam'])) {
 <script>
 
     function getTeams() {
-        get(<?php echo url("/api.php/team/list") ?>, function(data) {
-            $('#teams').html(data.body);
-        });
+        getContent("../index.php/frags/tournament_list", "#content");
+        api.get({ url: "../api.php/team/list",
+            success: function(data) {
+                $('#teams').html(data.body);
+            }});
     }
 
     function onLogout() {
@@ -37,26 +44,6 @@ if (isset($_POST['deleteTeam'])) {
         getTeams();
     });
 
-    /*
-    function deleteTeam(tournament_id) {
-        let data = {
-            id: tournament_id
-        }
-        api.post({
-            url: <?php echo url("/api.php/team/delete") ?>,
-            data: data,
-        })
-    }
-    */
-
 </script>
 
-
-
-
-<?php if (isset($_SESSION["login"])): ?>
-    <div class="button_container">
-        <button><a href="index.php/newTeam">Create Team</a></button>
-    </div></br>
-<?php endif ?>
 <div id="teams"></div>
