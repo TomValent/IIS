@@ -111,15 +111,33 @@ class UserController extends BaseController
 		return $result;
 	}
 
+	/**
+	 * @throws MethodException
+	 */
 	public function deleteAction(): void
 	{
 		$this->checkRequestMethod('POST');
 
 		$id = $_SESSION["id"];
-
 		$pdo = createDB();
+
+		$q1 = $pdo->prepare("SELECT t.TournamentID FROM Tournament t LEFT JOIN TournamentParticipant tp ON t.TournamentID = tp.TournamentID ".
+         							"WHERE t.type = 'member' AND t.ProgressState = 'ongoing' AND tp.MemberID = :id");
+		$q1->execute(["id" => $id]);
+		$var1 = $q1->fetch(PDO::FETCH_NAMED);
+
+		$q2 = $pdo->prepare("SELECT * FROM Tournament t LEFT JOIN TournamentParticipant tp ON t.TournamentID = tp.TournamentID ".
+    								"LEFT JOIN MemberTeam mt ON mt.TeamID=tp.TeamID ".
+         							"WHERE t.type = 'team' AND t.ProgressState = 'ongoing' AND mt.MemberID = :id");
+		$q2->execute(["id" => $id]);
+		$var2 = $q2->fetch(PDO::FETCH_NAMED);
+
+		if (!empty($var1) || !empty($var2)) {
+			throw new MethodException("You are in ongoing tournament. You can delete your account after tournament is finished.");
+		}
+
 		$stmt = $pdo->prepare("DELETE FROM Member WHERE MemberID = :id");
-		$stmt->execute(["id" => $_SESSION["id"]]);
+		$stmt->execute(["id" => $id]);
 		unset($_SESSION);
 		unset($_GET);
 		unset($_POST);
