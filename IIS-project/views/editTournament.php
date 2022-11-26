@@ -14,7 +14,7 @@
     }
 
     $pdo = createDB();
-    $sql = "SELECT TournamentID FROM Tournament";
+    $sql = "SELECT * FROM Tournament WHERE TournamentID = :id";
     $info = [];
 
     try {
