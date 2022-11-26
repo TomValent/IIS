@@ -4,7 +4,7 @@
     {
         echo $msg;
 		echo "  <div class='right'>
-                        <button><a href='/index.php/tournaments'>Go back to tournaments</a></button>
+                        <button><a href='tournaments'>Go back to tournaments</a></button>
                 </div>";
 		exit;
     }
@@ -58,7 +58,7 @@
 
         $pdo = createDB();
 
-        $sql = "INSERT INTO Tournament VALUES (default, :name, :creatorID, :startTime, :description, :price, :type, :participantCount, :maxCountTeam, :minCountTeam, :approvalState, :progressState)";
+        $sql = "INSERT INTO Tournament VALUES (default, :name, :creatorID, :startTime, :description, :price, :type, :participantCount, :maxCountTeam, :minCountTeam, default, default, :approvalState, :progressState)";
 
 		try {
 			$stmt= $pdo->prepare($sql);
@@ -70,7 +70,7 @@
     }
 ?>
 <div class='right'>
-    <button><a href='/index.php/tournaments'>Go back</a></button>
+    <button><a href='tournaments'>Go back</a></button>
 </div>
 <p>If you choose type Member, min and max team members fields are not required.</p>
 <form class="table" method="get">
@@ -144,6 +144,6 @@
         </tr>
     </table>
     <div class="center">
-        <input type="submit" value="Create" href="/index.php/tournaments" />
+        <input type="submit" value="Create" href="tournaments" />
     </div>
 </form>

@@ -4,10 +4,10 @@
     <body>
         <nav>
             <div class="menu-item">
-                <div><a href=<?php echo url("/index.php/players") ?>>Players</a></div>
+                <a href="../index.php/players">Players</a>
             </div>
             <div class="menu-item">
-                <div><a href=<?php echo url("/index.php/teams") ?>>Teams</a></div>
+                <a href="../index.php/teams">Teams</a>
             </div>
             <div class="menu-item">
                 <a href="tournaments">Tournaments</a>

@@ -1,11 +1,23 @@
 <div class='right'>
-    <button><a href='/index.php/tournaments'>Back to tournaments</a></button>
+    <a href='tournaments'><button>Back to tournaments</button></a>
 </div>
 <script>
+    const ID = urlParams()['id'];
+
+    function onLoad() {
+        getContent("../index.php/frags/tournament_main?id="+ID, "#content")
+    }
+
+    $(() => {
+        setupModal("#startModal")
+        setupModal("#resultModal")
+        setupModal("#participantsModal")
+        onLoad()
+    })
 
     function getOwnedTeams() {
         api.get({
-            url: <?php echo url("/api.php/user/owned_teams") ?>,
+            url: "../api.php/user/owned_teams",
             success: (data) => {
                 let teams = ["Select team"].concat(data.teams);
                 sel.html.innerHTML = "";
@@ -58,7 +70,7 @@
             console.log('join r: ' + team_name)
 
             api.post({
-                url: <?php echo url("/api.php/tournament/join") ?>,
+                url: "../api.php/tournament/join",
                 data: {
                     id: sel.id,
                     team_name: team_name
@@ -66,6 +78,7 @@
                 success: (data) => {
                     console.log('team joined')
                     hideTeamSelect()
+                    onLoad()
                 },
                 error: () => {
                     hideTeamSelect()
@@ -75,172 +88,407 @@
         false
     );
 
-    getOwnedTeams();
-
-    function joinTournament(id, elem) {
+    function joinTournament(elem) {
         if (elem)  {
             // team join
-            showTeamSelect(id, elem)
+            getOwnedTeams();
+            showTeamSelect(ID, elem)
         }
         else {
             // member join
             api.post({
-                url: <?php echo url("/api.php/tournament/join") ?>,
-                data: {id: id},
-                // success: getTournaments
+                url: "../api.php/tournament/join",
+                data: {id: ID},
+                success: onLoad
             })
         }
     }
 
-    function leaveTournament(id, team_id) {
+    function leaveTournament(team_id) {
         let data = {
-            id: id
+            id: ID
         }
         if (team_id) {
             data.team_id = team_id
         }
         api.post({
-            url: <?php echo url("/api.php/tournament/leave") ?>,
+            url: "../api.php/tournament/leave",
             data: data,
-            // success: getTournaments
+            success: onLoad
         })
     }
 
-    function updateParticipant(url, tournament_id, participant_id) {
+    function showSelection(participants, round) {
+        let count = Math.ceil(participants.length / 2)
+        if (count <= 0) {
+            console.log('not enough participants')
+            return;
+        }
+        console.log('pairs: ' + count)
+
+        let pl = new Players
+        for (const p of participants) {
+            pl.addPlayer(p.name, p.id)
+        }
+
+        let pairs = []
+        let div = $("#startContent")[0]
+        div.innerHTML = ''
+        for (let i = 0; i < count; i++) {
+            let p = new Pair(pl)
+            pairs.push(p)
+            div.appendChild(p.html)
+        }
+
+        $('#confirmButton').click(() => {
+            console.log('wip')
+            let elem = $("#startModalError")[0]
+            elem.innerHTML = ''
+
+            let data = [];
+            for (const s of pairs) {
+                data.push({
+                    'time': s.date.value,
+                    'p1': s.p1.selected.id,
+                    'p2': s.p2.selected.id
+                })
+            }
+            console.log(data)
+
+            api.post({
+                url: "../api.php/tournament/start_round",
+                data: {'id': ID, 'round': round, 'pairs': data},
+                success: (data) => {
+                    console.log('confirmed')
+                    onLoad()
+                },
+                error: (message) => {
+                    let elem = $("#startModalError")[0]
+                    elem.innerHTML = message
+                }
+            })
+
+        })
+
+        let elem = $("#startModalError")[0]
+        elem.innerHTML = ''
+        openModal("#startModal");
+    }
+
+    function startTournament() {
+        api.get({
+            url: "../api.php/tournament/participants?id=" + ID,
+            success: (data) => {
+                showSelection(data.participants, 1)
+            }
+        })
+
+    }
+
+    function endTournament() {
+        api.get({
+            url: "../api.php/tournament/end?id=" + ID,
+            success: onLoad
+        })
+
+    }
+
+    function approveTournament() {
+        api.post({
+            url: "../api.php/user/approve_tournament",
+            data: {t_id: ID},
+            success: onLoad
+        })
+    }
+
+    function updateParticipant(url, participant_id) {
         api.post({
             url: url,
-            data: {t_id: tournament_id, p_id: participant_id},
-            // success: getTournaments
+            data: {t_id: ID, p_id: participant_id},
+            success: onLoad
         })
     }
 
-    function acceptParticipant(tournament_id, participant_id) {
-        updateParticipant(<?php echo url("/api.php/tournament/accept") ?>, tournament_id, participant_id);
+    function acceptParticipant(participant_id) {
+        updateParticipant("../api.php/tournament/accept", participant_id);
     }
 
-    function revokeParticipant(tournament_id, participant_id) {
-        updateParticipant(<?php echo url("/api.php/tournament/revoke") ?>, tournament_id, participant_id);
+    function revokeParticipant(participant_id) {
+        updateParticipant("../api.php/tournament/revoke", participant_id);
     }
 
-    function kickParticipant(tournament_id, participant_id) {
-        updateParticipant(<?php echo url("/api.php/tournament/kick") ?>, tournament_id, participant_id);
+    function kickParticipant(participant_id) {
+        updateParticipant("../api.php/tournament/kick", participant_id);
     }
 
-    function rejectParticipant(tournament_id, participant_id) {
-        updateParticipant(<?php echo url("/api.php/tournament/kick") ?>, tournament_id, participant_id);
+    function rejectParticipant(participant_id) {
+        updateParticipant("../api.php/tournament/kick", participant_id);
+    }
+
+    const default_opt = {name: "Select player", id: -1}
+    const bye_opt = {name: "BYE", id: -2}
+
+    class PlayerSelect {
+        constructor(players) {
+            this.pl = players
+            this.sel = document.createElement('select')
+            this.sel.setAttribute('style', 'display:block')
+            this.selected = {...default_opt}
+            this.update(players)
+
+            this.sel.addEventListener(
+                'change',
+                () => {
+                    let prev = {...this.selected}
+                    this.selected.name = this.sel.options[this.sel.selectedIndex].text
+                    this.selected.id = this.sel.value
+                    this.pl.take(this, this.selected, prev)
+                },
+                false
+            );
+        }
+
+        update(players) {
+            this.sel.innerHTML = ""
+            this.addOption(default_opt)
+            this.addOption(bye_opt)
+            for (const p of players.values) {
+                if (!p.taken || p.id == this.selected.id) {
+                    this.addOption(p)
+                }
+            }
+            this.sel.value = this.selected.id
+        }
+
+        addOption(player) {
+            let option = document.createElement("option")
+            option.value = player.id
+            option.text = player.name
+            this.sel.appendChild(option)
+        }
+
+    }
+
+    class Players {
+        constructor() {
+            this.values = []
+            this.selects = []
+        }
+
+        addPlayer(name, id) {
+            this.values.push({name: name, id: id, taken: false})
+        }
+
+        set(player, state) {
+            let p = this.values.find(o => o.id === Number(player.id))
+            if (p) {
+                p.taken = state
+            }
+        }
+
+        createSelect() {
+            let s = new PlayerSelect(this)
+            this.selects.push(s)
+            return s
+        }
+
+        take(sel, current, prev) {
+            this.set(current, true)
+            this.set(prev, false)
+            for (let s of this.selects) {
+                if (s !== sel) {
+                    s.update(this)
+                }
+            }
+        }
+
+    }
+
+    class Pair {
+        constructor(players) {
+            this.p1 = players.createSelect()
+            this.p2 = players.createSelect()
+            this.date = document.createElement("input")
+            this.date.setAttribute("type", "datetime-local")
+            let now = new Date()
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset() + 60)
+            this.date.value = now.toISOString().slice(0,16)
+
+            this.html = document.createElement("div")
+            this.html.setAttribute('style', 'display:block; margin: 20px')
+            this.html.appendChild(this.date)
+            this.html.appendChild(this.p1.sel)
+            this.html.appendChild(this.p2.sel)
+        }
+    }
+
+    function setResult(id) {
+
+        api.get({
+            url: "../api.php/match/get",
+            data: {id: id, t_id: ID},
+            success: (data) => {
+                console.log(data)
+
+                let bye = data.isBye
+
+                $('#resultPointsA')[0].value = data.Points1
+                $('#resultPointsB')[0].value = data.Points2
+
+                $("#resultNameA")[0].innerHTML = data.Name[0]
+                $("#resultNameB")[0].innerHTML = data.Name[1]
+
+                let btn = $('#resultConfirmButton')[0]
+                let checkA = $('#resultCheckA')[0]
+                let checkB = $('#resultCheckB')[0]
+
+                $('#resultPartB')[0].style.display = bye? 'none' : 'flex';
+                checkA.checked = false
+                checkB.checked = false
+                if (data.Winner[0] || bye) {
+                    checkA.checked = true
+                }
+                else if (data.Winner[1]) {
+                    checkB.checked = true
+                }
+
+                checkA.onclick = () => {
+                    if (checkA.checked) {
+                        $('#resultBoxA').addClass('active')
+                        $('#resultBoxB').removeClass('active')
+                        checkB.checked = false
+                    }
+                    else {
+                        $('#resultBoxA').removeClass('active')
+                    }
+                }
+
+                checkB.onclick = () => {
+                    if (checkB.checked) {
+                        $('#resultBoxB').addClass('active')
+                        $('#resultBoxA').removeClass('active')
+                        checkA.checked = false
+                    }
+                    else {
+                        $('#resultBoxB').removeClass('active')
+                    }
+                }
+
+                btn.onclick = ()=> {
+                    let elem = $("#resultModalError")[0]
+                    elem.innerHTML = ''
+
+                    let pointsA = $('#resultPointsA')[0].value
+                    let pointsB = $('#resultPointsB')[0].value
+
+                    let data = {
+                        id: id,
+                        t_id: ID,
+                        points1: pointsA,
+                        points2: pointsB
+                    }
+                    if (checkA.checked) {
+                        data.winner = 0
+                    }
+                    else if (checkB.checked) {
+                        data.winner = 1
+                    }
+
+                    api.post({
+                        url: "../api.php/match/set_result",
+                        data: data,
+                        success: onLoad,
+                        error: (message) => {
+                            let elem = $("#resultModalError")[0]
+                            elem.innerHTML = message
+                        }
+                    })
+                }
+
+                let elem = $("#resultModalError")[0]
+                elem.innerHTML = ''
+                openModal("#resultModal");
+
+            }
+        })
+
+    }
+
+    function onNextRound() {
+        api.get({
+            url: "../api.php/tournament/round_results?id=" + ID,
+            success: (data) => {
+                if (data.complete) {
+                    showSelection(data.results, data.round + 1)
+                }
+            }
+        })
+    }
+
+    function viewParticipants() {
+        $("#participants-list")[0].innerHTML = ''
+        getContent("../index.php/frags/tournament_participants?id="+ID, "#participants-list")
+        openModal("#participantsModal")
     }
 
 </script>
-<?php
 
-    if (!isset($_GET['id'])) {
-        echo 'Tournament does not exist';
-        exit();
-    }
+<div id="content"></div>
+<div id="startModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>Tournament creation</p>
+        <div id="startContent">
+        </div>
 
-    try {
-        $id = $_GET['id'];
-        $pdo = createDB();
+        <button id="confirmButton">Confirm</button>
+        <span id="startModalError" class="error_msg"></span>
+    </div>
+</div>
+<div id="resultModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p style="width: 10em">Match result</p>
+        <div id="resultContent">
+            <div class="flex-row" style="gap: 40px">
 
-        $stmt = $pdo->prepare("SELECT * FROM Tournament WHERE TournamentID=:id");
-        $stmt->execute(['id' => $id]);
-        $tournament = $stmt->fetch();
-        if (!$tournament) {
-            echo 'Tournament does not exist';
-            exit();
-        }
+                <div class="flex-column">
+                    <div class="resultWinnerBox" id="resultBoxA">
+                        <label>
+                            <span id="resultNameA"></span>
+                            <input type="checkbox" class="resultCheckbox" name='test' id="resultCheckA">
+                            <label for="resultCheckA"></label>
+                        </label>
+                    </div>
+                    <div>
+                        <input type="number" value="0" style="width: 6em" id="resultPointsA">
+                        pts
+                    </div>
+                </div>
+                <div class="flex-column" id="resultPartB">
+                    <div class="resultWinnerBox" id="resultBoxB">
+                        <label>
+                            <input type="checkbox" class="resultCheckbox" name='test' id="resultCheckB">
+                            <label for="resultCheckB"></label>
+                            <span id="resultNameB"></span>
+                        </label>
+                    </div>
+                    <div>
+                        <input type="number" value="0" style="width: 6em" id="resultPointsB">
+                        pts
+                    </div>
+                </div>
 
-        $tournament_owner = false;
-		echo 'Tournament<br>';
-		echo $tournament['Name'].'<br>';
+            </div>
 
-        if ($tournament['type'] == 'team') {
-			$participants = Database::getInstance()->getTeamParticipants($id);
-		}
-        else {
-			$participants = Database::getInstance()->getMemberParticipants($id);
-        }
-
-        if (isset($_SESSION["id"])) {
-			$user_id = $_SESSION["id"];
-            $tournament_owner = $user_id == $tournament["CreatorID"];
-            echo '<div id="tournament_management" style="display: inline">';
-			if ($tournament_owner) {
-				if ($tournament['ProgressState'] == 'unstarted') {
-					echo '<button onclick="startTournament('.$id.')">Start tournament</button>';
-				}
-				echo '<button>Edit tournament</button>';
-			}
-			if ($_SESSION["isAdmin"]) {
-				echo '<button onclick="deleteTournament(' . $id . ')">Delete tournament</button>';
-			}
-
-			if ($tournament['type'] == 'team') {
-				echo '<div id="join" style="display:inline;">';
-				echo '<button onclick="joinTournament(' . $id . ', this.parentElement)">Join</button>';
-				echo '</div>';
-                $teams = array();
-                foreach ($participants as $p) {
-                    if ($p['LeaderID'] == $user_id) {
-                        $teams[] = $p;
-                    }
-			    }
-                if (count($teams) > 0) {
-                    echo '<div>';
-					echo 'My participating teams:<br>';
-                    foreach ($teams as $t) {
-						echo $t['Name'];
-                        if ($t['AcceptanceState'] == 'pending') {
-							echo '<span class="label pending">PENDING</span>';
-						}
-						echo '<button onclick="leaveTournament(' . $id . ', ' . $t['TeamID'] .')">Leave</button>';
-						echo '<br>';
-					}
-					echo '</div>';
-                }
-			} else {
-
-				$state = Database::getInstance()->getMemberParticipantState($id, $user_id);
-				if ($state == 'none') {
-					echo '<button onclick="joinTournament(' . $id . ')">Join</button>';
-				} else {
-					if ($state == 'pending') {
-						echo '<span class="label pending">PENDING</span>';
-					}
-					echo '<button onclick="leaveTournament(' . $id . ')">Leave</button>';
-				}
-			}
-			echo '</div>';
-		}
-
-		echo '<br>Participants:<br>';
-        if ($tournament_owner) {
-			foreach ($participants as $p) {
-                if ($p['AcceptanceState'] == 'pending') {
-					echo $p['Name'];
-					echo '<span class="label pending">PENDING</span>';
-					echo '<button onclick="acceptParticipant(' . $id . ', ' . $p['TournamentParticipantID'] . ')">Accept</button>';
-					echo '<button onclick="kickParticipant(' . $id . ', ' . $p['TournamentParticipantID'] . ')">Reject</button>';
-					echo '<br>';
-                }
-
-			}
-		}
-		foreach ($participants as $p) {
-			if ($p['AcceptanceState'] == 'approved') {
-				echo $p['Name'];
-				echo '<button onclick="revokeParticipant(' . $id . ', ' . $p['TournamentParticipantID'] . ')">Revoke</button>';
-				echo '<button onclick="kickParticipant(' . $id . ', ' . $p['TournamentParticipantID'] . ')">Kick</button>';
-				echo '<br>';
-			}
-		}
-
-        echo '<div id="content">';
-        echo '</div>';
-
-    } catch (PDOException $e) {
-		echo $e->getMessage();
-        die();
-    }
-?>
-
+        </div>
+        <button id="resultConfirmButton">Confirm</button>
+        <span id="resultModalError" class="error_msg"></span>
+    </div>
+</div>
+<div id="participantsModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="participants-list"></div>
+    </div>
+</div>

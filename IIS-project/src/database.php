@@ -28,7 +28,7 @@ class Database implements \SplSubject {
 		return $this->pdo;
 	}
 
-	public function getUserID($login)
+	public function getUserID($login): mixed
 	{
 		$pdo = createDB();
 		$stmt= $pdo->prepare("SELECT MemberID FROM Member WHERE Login = :login;");
@@ -40,16 +40,12 @@ class Database implements \SplSubject {
 		return $user['MemberID'];
 	}
 
-	public function getTournamentByID($id)
+	public function getTournamentByID($id): mixed
 	{
 		$pdo = createDB();
 		$stmt = $pdo->prepare("SELECT * FROM Tournament WHERE TournamentID=:id;");
 		$stmt->execute(["id" => $id]);
-		$tournament = $stmt->fetch();
-		if (!$tournament) {
-			return NULL;
-		}
-		return $tournament;
+		return $stmt->fetch();
 	}
 
 	private function getParticipantState($sql, $data): ?string
@@ -76,11 +72,16 @@ class Database implements \SplSubject {
 		return $this->getParticipantState($sql, [$tournament_id, $team_id]);
 	}
 
-	public function getTeamParticipants($id, $leader_id = NULL) {
+	public function getTeamParticipants($tournament_id, $acceptance_state = NULL, $leader_id = NULL): array|bool
+	{
+		$data = ['id' => $tournament_id];
 		$sql = "SELECT * FROM TournamentParticipant TP "
 			."INNER JOIN Team T ON TP.TeamID = T.TeamID "
 			."WHERE TP.TournamentID = :id";
-		$data = ['id' => $id];
+		if ($acceptance_state !== NULL) {
+			$sql .= " AND TP.AcceptanceState = :state";
+			$data['state'] = $acceptance_state;
+		}
 		if ($leader_id !== NULL) {
 			$sql .= " AND T.LeaderID = :l_id";
 			$data['l_id'] = $leader_id;
@@ -93,15 +94,122 @@ class Database implements \SplSubject {
 		return $stmt->fetchAll();
 	}
 
-	public function getMemberParticipants($id) {
+	public function getTeamParticipantsWithLeader($tournament_id, $acceptance_state = NULL, $leader_id = NULL): array|bool
+	{
+		return $this->getTeamParticipants($tournament_id, $acceptance_state, $leader_id);
+	}
+
+	public function getMemberParticipants($tournament_id, $acceptance_state = NULL): array|bool
+	{
+		$data = ['id' => $tournament_id];
 		$sql = "SELECT * FROM TournamentParticipant TP "
-			."INNER JOIN Member M ON TP.MemberID = M.MemberID";
+			."INNER JOIN Member M ON TP.MemberID = M.MemberID "
+			."WHERE TP.TournamentID = :id";
+		if ($acceptance_state !== NULL) {
+			$sql .= " AND TP.AcceptanceState = :state";
+			$data['state'] = $acceptance_state;
+		}
+		$pdo = createDB();
+		$stmt = $pdo->prepare($sql);
+		$stmt->execute($data);
+
+		return $stmt->fetchAll();
+	}
+
+	public function getMemberMatches($tournament_id, $round = NULL): array|bool
+	{
+		$data = ['id' => $tournament_id];
+		$sql = "SELECT * FROM Matches M "
+			."LEFT OUTER JOIN Member AS M1 ON M.Member1ID = M1.MemberID "
+			."LEFT OUTER JOIN Member AS M2 ON M.Member2ID = M2.MemberID "
+			." WHERE M.TournamentID = :id ";
+		if ($round !== NULL) {
+			$sql .= "AND M.Round = :round ";
+			$data['round'] = $round;
+		}
 
 		$pdo = createDB();
 		$stmt = $pdo->prepare($sql);
-		$stmt->execute();
+		$stmt->execute($data);
 
-		return $stmt->fetchAll();
+		return $stmt->fetchAll(PDO::FETCH_NAMED);
+	}
+
+	public function getTeamMatches($tournament_id, $round = NULL): array|bool
+	{
+		$data = ['id' => $tournament_id];
+		$sql = "SELECT * FROM Matches M "
+			."LEFT OUTER JOIN Team AS T1 ON M.Team1ID = T1.TeamID "
+			."LEFT OUTER JOIN Team AS T2 ON M.Team2ID = T2.TeamID "
+			." WHERE M.TournamentID = :id ";
+		if ($round !== NULL) {
+			$sql .= "AND M.Round = :round ";
+			$data['round'] = $round;
+		}
+
+		$pdo = createDB();
+		$stmt = $pdo->prepare($sql);
+		$stmt->execute($data);
+
+		return $stmt->fetchAll(PDO::FETCH_NAMED);
+	}
+
+
+	public function getMemberMatch($tournament_id, $id): mixed
+	{
+		$data = ['id' => $tournament_id];
+		$sql = "SELECT * FROM Matches M "
+			."LEFT OUTER JOIN Member AS M1 ON M.Member1ID = M1.MemberID "
+			."LEFT OUTER JOIN Member AS M2 ON M.Member2ID = M2.MemberID "
+			." WHERE (MatchID,TournamentID) = (:id, :t_id)";
+
+		$pdo = createDB();
+		$stmt = $pdo->prepare($sql);
+		$stmt->execute(['id' => $id, 't_id' => $tournament_id]);
+
+		return $stmt->fetch(PDO::FETCH_NAMED);
+	}
+
+	public function getTeamMatch($tournament_id, $id): mixed
+	{
+		$data = ['id' => $tournament_id];
+		$sql = "SELECT * FROM Matches M "
+			."LEFT OUTER JOIN Team AS T1 ON M.Team1ID = T1.TeamID "
+			."LEFT OUTER JOIN Team AS T2 ON M.Team2ID = T2.TeamID "
+			." WHERE (MatchID,TournamentID) = (:id, :t_id)";
+
+		$pdo = createDB();
+		$stmt = $pdo->prepare($sql);
+		$stmt->execute(['id' => $id, 't_id' => $tournament_id]);
+
+		return $stmt->fetch(PDO::FETCH_NAMED);
+	}
+
+	public function getMatchByID($id, $tournament_id): mixed
+	{
+		$sql = "SELECT * FROM Matches WHERE (MatchID,TournamentID) = (:id, :t_id)";
+
+		$pdo = createDB();
+		$stmt = $pdo->prepare($sql);
+		$stmt->execute(['id' => $id, 't_id' => $tournament_id]);
+
+		return $stmt->fetch(PDO::FETCH_ASSOC);
+	}
+
+	public function userHasTeams($id): bool
+	{
+		$sql = "SELECT COUNT(TeamID) FROM Team WHERE LeaderID=:id";
+
+		$pdo = createDB();
+		$stmt = $pdo->prepare($sql);
+		$stmt->execute(['id' => $id]);
+
+		$result = $stmt->fetch();
+		if (!$result) {
+			return false;
+		}
+
+		return $result['COUNT(TeamID)'] > 0;
 	}
 
 	//add observer
@@ -152,4 +260,12 @@ class DbObserver implements SplObserver {
 function createDB(): PDO
 {
 	return Database::getInstance()->getPDO();
+}
+
+function pdo_debug($stmt) {
+	ob_start();
+	$stmt->debugDumpParams();
+	$r = ob_get_contents();
+	ob_end_clean();
+	error_log($r);
 }

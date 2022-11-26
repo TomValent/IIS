@@ -91,6 +91,18 @@ class UserController extends BaseController
 	/**
 	 * @throws MethodException
 	 */
+	public function logged_userAction(): array
+	{
+		$this->checkRequestMethod('GET');
+
+		$result['username'] = $_SESSION["username"]?? NULL;
+
+		return $result;
+	}
+
+	/**
+	 * @throws MethodException
+	 */
 	public function owned_teamsAction(): array
 	{
 		$this->checkRequestMethod('GET');
@@ -109,6 +121,28 @@ class UserController extends BaseController
 
 		$result['teams'] = $teams;
 		return $result;
+	}
+
+	/**
+	 * @throws MethodException
+	 */
+	public function approve_tournamentAction(): void
+	{
+		$this->checkRequestMethod('POST');
+		$this->checkLoggedIn();
+		if (!isAdmin()) {
+			throw new MethodException('User does not have admin privilege');
+		}
+
+		$t_id = $this->get($_POST, "t_id");
+		$tournament = new Tournament($t_id);
+		if (!$tournament->exists()) {
+			throw new MethodException("Tournament does not exist");
+		}
+
+		$pdo = createDB();
+		$stmt = $pdo->prepare("UPDATE Tournament SET ApprovalState='approved' WHERE TournamentID=:id");
+		$stmt->execute(['id' => $t_id]);
 	}
 
 }

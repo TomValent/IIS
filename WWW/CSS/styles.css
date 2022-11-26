@@ -1,31 +1,45 @@
-body {
-    font-family: 'Poppins';
-    font-size: 1.2em;
+:root {
+    --fg: #EEE;
+    --bg: #222;
 }
 
-.button_container {
-    padding-bottom: 50px;
-    display: inline-block;
+body {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2em;
+    margin-bottom: 230px;
+    margin-left: 15px;
+    margin-right: 15px;
+    background-color: var(--bg);
+    color: var(--fg);
 }
 
 button {
-    margin-left: 5px;
-    margin-right: 5px;
-    border: 1px solid black;
-    font-size: 0.8em;
+    margin: 5px 10px;
+    font-size: 0.7em;
     font-weight: 400;
+    color: var(--fg) !important;
+    border-radius: 7px;
+    border:solid 2px var(--fg);
+    background: transparent;
+    text-transform: uppercase;
 }
 
-button a {
-    text-decoration: none;
-    color: black;
+button:hover{
+    background: var(--fg);
+    color: var(--bg) !important;
 }
 
-.button_container a {
-    display: inline;
-    padding: 0 1em;
-    color: black;
-    text-decoration: none;
+button:hover,
+input[type="submit"]:hover{
+    -webkit-transition: all .3s ease-in-out;
+    -moz-transition: all .3s ease-in-out;
+    -ms-transition: all .3s ease-in-out;
+    -o-transition: all .3s ease-in-out;
+    transition: all .3s ease-in-out;
+}
+
+.button_big {
+    padding: 10px;
 }
 
 #welcome {
@@ -46,13 +60,17 @@ h1 {
 .form {
     width: 20%;
     height: 50%;
-    margin: auto;
-    margin-top: 10%;
+    margin: 10% auto auto;
     text-align: center;
     border: solid 1px black;
     border-radius: 30px;
     padding: 20px;
     box-shadow: 1px 2px;
+}
+
+#formResult {
+    width: auto;
+    text-align: center;
 }
 
 .input {
@@ -86,7 +104,6 @@ nav {
 
 .menu-item a {
     text-decoration: none;
-    color: black;
 }
 
 .center {
@@ -99,8 +116,7 @@ table, th, td {
 }
 
 table {
-    margin: auto;
-    margin-top: 10%;
+    margin: 10% auto auto;
     border-collapse: collapse;
 }
 
@@ -126,9 +142,8 @@ td > input {
 select::-ms-expand {
     display: none;
 }
+
 select {
-    border: 1px solid black;
-    border-radius: 0;
     font-size: 0.8em;
 }
 
@@ -141,9 +156,16 @@ select {
     margin-top: 0.4em;
 }
 
+.tournament_list_row a{
+    text-decoration: none;
+    font-weight: 800;
+    color: var(--fg);
+}
+
 .label {
-    background-color: #222222;
+    background-color: #999;
     padding: 0.2em;
+    border-radius: 6px;
     vertical-align: middle;
     font-size: 0.6em;
     color: white;
@@ -152,3 +174,220 @@ select {
 }
 
 .pending {background-color: #696969;}
+
+.ongoing {
+    color: black;
+    background-image: linear-gradient(#66ffcc, #00a16b);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #000000BB;
+    margin: auto;
+    padding: 30px;
+    border: 1px solid var(--fg);
+    width: min-content;
+    display: flex;
+    flex-direction: column;
+}
+
+.close {
+    color: #ecc;
+    font-size: 1.7em;
+    font-weight: bold;
+    align-self: end;
+}
+
+.close:hover,
+.close:focus {
+    color: var(--fg);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.error_msg {
+    color: #DD1010;
+    font-size: 0.9em;
+}
+
+.tournament-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.round {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.match-p1 {
+    top:2px;
+    padding-left: 10px;
+    border: 2px solid white;
+    text-align: center;
+    width: auto;
+    display: block;
+    position: relative;
+}
+
+.match-p2 {
+    padding-left: 10px;
+    border: 2px solid white;
+    text-align: center;
+    width: auto;
+    display: block;
+}
+
+.match-pts {
+    font-size: 0.8em;
+    margin-left: 1em;
+    text-align: right;
+}
+
+.match-pts {
+    font-size: 0.8em;
+    margin-left: 1em;
+    text-align: right;
+}
+
+.round-matches {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    gap: 20px
+}
+
+#tournament-management {
+    display: flex;
+}
+
+#tournament-main {
+    display: inline-flex;
+    flex-direction: row;
+    gap: 30px;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#resultContent {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+}
+
+.resultWinnerBox label {
+    display: flex;
+    flex-direction: row;
+    white-space: nowrap;
+}
+
+.resultWinnerBox.active {
+    border: 2px #ebc400 solid;
+}
+
+.resultWinnerBox{
+    border: 2px transparent solid;
+}
+
+.resultWinnerBox:hover {
+    border: 2px #ebc400 solid;
+}
+
+.res-radio {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.resultCheckbox {
+    display: none;
+}
+.resultCheckbox + label {
+    background-color: #696969;
+    -webkit-mask-image: url('../images/trophy.svg');
+    mask-image:  url('../images/trophy.svg');
+    background-size: auto 100%;
+    width: 40px;
+    height: 40px;
+    display: block;
+    min-height: 100%;
+}
+
+.resultCheckbox:checked + label {
+    background-color: #ebc400;
+}
+
+/* IMAGE STYLES */
+.res-radio + img {
+    cursor: pointer;
+}
+
+/* CHECKED STYLES */
+.res-radio:checked + img {
+    outline: 2px solid #f00;
+}
+
+.match-winner {
+    color: var(--bg);
+    background-image: linear-gradient(to right, #ebc400, #b39400);
+}
+
+.match-time {
+    font-size: 0.8em;
+    width: 100%;
+    margin-bottom: -2px;
+}
+
+.set-result-button {
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    width:100%;
+    display: block;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0));
+}
+
+#tournament-rounds {
+    display: flex;
+    gap: 50px;
+}
+
+#button-next-round {
+    align-self: flex-start;
+    margin-right: 30px;
+    color: #66ffcc !important;
+    border-color: #66ffcc !important;
+}
+
+.menu-item a{
+    text-decoration: none;
+    color: var(--bg);
+}
