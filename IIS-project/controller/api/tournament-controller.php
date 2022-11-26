@@ -145,20 +145,6 @@ class TournamentController extends BaseController {
 			$pdo->rollback();
 			throw $e;
 		}
-    }
-
-		$stmt = $pdo->prepare("SELECT StartTime, ProgressState FROM Tournament WHERE TournamentID = :id");
-		$stmt->execute(["id" => $id]);
-		$time = $stmt->fetch(PDO::FETCH_NAMED);
-
-		if ((time() <= intval(strtotime($time["StartTime"])) - 3600) || $time["ProgressState"] !== "unstarted") {
-			return;
-		}
-		$stmt = $pdo->prepare("UPDATE Tournament SET ProgressState = 'ongoing' WHERE TournamentID = :id");
-		$stmt->execute(["id" => $id]);
-
-		error_log("tournament started");
-
 	}
 
 	/**
