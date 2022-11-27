@@ -11,8 +11,11 @@ function error(string $msg): void
 }
 
 try{
-    $id = $_GET['id'];
-    $user_id = $_SESSION["id"];
+    $id = $_GET['id']?? NULL;
+    if ($id == NULL) {
+		error("Team does not exist");
+    }
+    $user_id = $_SESSION["id"]?? NULL;
     $pdo = createDB();
     $stmt = $pdo->prepare("SELECT * FROM Team WHERE TeamID=:id");
     $stmt->execute(['id' => $id]);

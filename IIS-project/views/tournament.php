@@ -185,8 +185,9 @@
         })
     }
     function endTournament() {
-        api.get({
-            url: "../api.php/tournament/end?id=" + ID,
+        api.post({
+            data: {id: ID},
+            url: "../api.php/tournament/end",
             success: onLoad
         })
     }
@@ -304,7 +305,7 @@
             url: "../api.php/match/get",
             data: {id: id, t_id: ID},
             success: (data) => {
-                let bye = data.isBye
+                let bye = data.isBye === 1
                 $('#resultPointsA')[0].value = data.Points1
                 $('#resultPointsB')[0].value = data.Points2
                 $("#resultNameA")[0].innerHTML = data.Name[0]
@@ -442,7 +443,9 @@
                 </div>
             </div>
         </div>
-        <button id="resultConfirmButton">Confirm</button>
+        <div class="confirmContainer">
+            <button id="resultConfirmButton">Confirm</button>
+        </div>
         <span id="resultModalError" class="error_msg"></span>
     </div>
 </div>

@@ -95,9 +95,11 @@ class Tournament implements ArrayAccess  {
 	public function finalRoundComplete(): bool
 	{
 		$round = $this['ActualRound'];
+		error_log(">> r: ".$round);
 		if (!array_key_exists($round, $this->results) || !array_key_exists($round, $this->rounds)) {
 			return false;
 		}
+		error_log(">> r2: ".$this->results[$round]);
 		return $this->results[$round] && count($this->rounds[$round]) == 1;
 	}
 

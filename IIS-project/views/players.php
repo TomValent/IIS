@@ -10,7 +10,7 @@
     <td>Username</td>
     <td>Stats</td>
     <?php
-	if ($_SESSION["isAdmin"]) {
+	if ($_SESSION["isAdmin"]?? false) {
         echo "<td>Set admin rights</td>";
     }
     foreach ($users as $user) {
@@ -18,7 +18,7 @@
         echo "<tr>
                 <td>". $user["Name"] ."</td>
                 <td><button><a href='player?id=".$user["MemberID"]."' >Detail</a></button></td>";
-        if ($_SESSION["isAdmin"]) {
+        if ($_SESSION["isAdmin"]?? false) {
             $setAdmin =  $user["isAdmin"] ? 0 : 1;
             echo "<td><form method='post'>
                     <input type='hidden' name='setAdmin' value='". $setAdmin ."'>

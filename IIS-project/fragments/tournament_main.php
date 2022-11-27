@@ -113,7 +113,7 @@ try {
 				else {
 					echo '<span class="match-p2">' . $name2 . '<br></span>';
 				}
-				if (($tournament_owner || isAdmin()) && $m['Round'] == $tournament['ActualRound']) {
+				if ($tournament->isOngoing() && ($tournament_owner || isAdmin()) && $m['Round'] == $tournament['ActualRound']) {
 					echo '<button class="set-result-button" onclick="setResult(' . $m['MatchID'] . ')">Set result</button>';
 				}
 				else {
