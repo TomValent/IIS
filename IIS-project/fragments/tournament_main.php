@@ -66,7 +66,9 @@ try {
 		if ($tournament['type'] == 'team') {
 			$has_teams = Database::getInstance()->userHasTeams($user_id);
 			if ($has_teams && $tournament['ProgressState'] == 'unstarted') {
+				echo '<span id="joinButtonContainer" style="visibility: hidden">';
 				echo '<button onclick="joinTournament(this.parentElement)">Join with team</button>';
+				echo '</span>';
 			}
 		}
 		else {
@@ -83,9 +85,7 @@ try {
 			}
 		}
 	}
-	if ($tournament['ProgressState'] != 'unstarted') {
-		echo '<button onclick="viewParticipants()">View particpants</button>';
-	}
+	echo '<button onclick="viewDetails()">Details</button>';
 	echo '</div>';
 	echo '</div>';
 

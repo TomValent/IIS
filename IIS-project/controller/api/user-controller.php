@@ -126,6 +126,58 @@ class UserController extends BaseController
 	/**
 	 * @throws MethodException
 	 */
+	public function available_teamsAction(): array
+	{
+		$this->checkRequestMethod('GET');
+		$t_id = $this->get($_GET, 'id');
+		$this->checkLoggedIn();
+		$user_id = $_SESSION["id"];
+
+		$tournament = Database::getInstance()->getTournamentByID($t_id);
+		if (!$tournament) {
+			throw new MethodException("Tournament does not exist");
+		}
+		if ($tournament['type'] != 'team') {
+			throw new MethodException("Tournament is not team type");
+		}
+
+		$min = $tournament['MinCountTeam'];
+		$max = $tournament['MaxCountTeam'];
+
+		$pdo = createDB();
+		$sql = "SELECT T.TeamID, T.Name, Count(MT.MemberID) AS cnt FROM Team T "
+			  ."LEFT JOIN MemberTeam MT ON T.TeamID = MT.TeamID "
+			  ."WHERE LeaderID=:id AND NOT EXISTS (SELECT "
+			  ."TeamID FROM TournamentParticipant TP WHERE TP.TeamID=T.TeamID AND TP.TournamentID=:t_id"
+			  .") "
+			  ."GROUP BY T.TeamID "
+			  ."HAVING cnt BETWEEN :min AND :max;";
+
+		$stmt = $pdo->prepare($sql);
+		$stmt->execute([
+			'id' => $user_id,
+			't_id' => $t_id,
+			'min' => $min,
+			'max' => $max
+		]);
+
+		$teams = $stmt->fetchAll(PDO::FETCH_NAMED);
+
+		$filtered = array();
+		foreach ($teams as $t) {
+			$temp['Name'] = $t['Name'];
+			$temp['ID'] = $t['TeamID'];
+			$filtered[] = $temp;
+		}
+
+		$result['teams'] = $filtered;
+		return $result;
+	}
+
+
+	/**
+	 * @throws MethodException
+	 */
 	public function deleteAction(): void
 	{
 		$this->checkRequestMethod('POST');

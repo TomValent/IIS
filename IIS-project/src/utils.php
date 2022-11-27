@@ -1,6 +1,6 @@
 <?php
 
-function getUserID()
+function getUserID(): mixed
 {
 	if (!isset($_SESSION["id"])) {
 		return NULL;
@@ -8,9 +8,18 @@ function getUserID()
 	return $_SESSION["id"];
 }
 
-function isAdmin() {
+function isAdmin(): bool
+{
 	if (!isset($_SESSION["isAdmin"])) {
 		return false;
 	}
 	return $_SESSION["isAdmin"];
+}
+
+function displayName($name): string
+{
+	if ($name == NULL) {
+		return "deleted";
+	}
+	return $name;
 }

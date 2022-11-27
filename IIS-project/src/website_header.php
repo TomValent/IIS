@@ -18,7 +18,7 @@
                     url: request.url,
                     data: data,
                     success: (obj)=>{
-                        console.log('request success (' + request.url + ')')
+                        // console.log('request success (' + request.url + ')')
                         if (typeof request.success === "function") {
                             request.success(obj)
                         }
@@ -48,12 +48,15 @@
             }
         };
 
-        function getContent(url, target, request_data) {
+        function getContent(url, target, request_data, success) {
             api.get({
                 url: url,
                 data: request_data,
                 success: (data) => {
                     $(target)[0].innerHTML = data
+                    if (typeof success === "function") {
+                        success(data)
+                    }
                 }
             })
         }

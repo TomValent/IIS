@@ -68,11 +68,7 @@ class Tournament implements ArrayAccess  {
 		if ($match['isBye'] && $index == 1) {
 			return "BYE";
 		}
-		$name = $match['Name'][$index];
-		if ($name == NULL) {
-			return "deleted";
-		}
-		return $name;
+		return displayName($match['Name'][$index]);
 	}
 
 	public static function winnerAttrib($match, $index) : string

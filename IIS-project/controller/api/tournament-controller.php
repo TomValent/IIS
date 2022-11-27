@@ -22,9 +22,6 @@ class TournamentController extends BaseController {
 		if ($tournament['CreatorID'] != $user_id) {
 			throw new MethodException("Tournament is not owned by user");
 		}
-		if ($tournament['ProgressState'] != 'unstarted') {
-			throw new MethodException("Tournament already started");
-		}
 
 		if ($tournament['type'] == 'team') {
 			$participants = Database::getInstance()->getTeamParticipants($t_id);
@@ -186,37 +183,49 @@ class TournamentController extends BaseController {
 	{
 		$this->checkRequestMethod('POST');
 		$user_id = $this->getLoggedUserID();
-
-		if (!isset($_POST["id"])) {
-			throw new MethodException("Missing tournament id");
-		}
-		$id = $_POST["id"];
+		$id = $this->get($_POST, "id");
 
 		$tournament = Database::getInstance()->getTournamentByID($id);
 		if (!$tournament) {
 			throw new MethodException("Tournament does not exist");
 		}
+		if ($tournament['ProgressState'] != 'unstarted') {
+			throw new MethodException("Tournament already started");
+		}
 
 		$pdo = createDB();
 		if ($tournament['type'] == 'team') {
-			if (!isset($_POST["team_name"])) {
-				throw new MethodException("Missing team name");
-			}
-			$name = $_POST["team_name"];
+			$team_id = $this->get($_POST, "team_id");
 
-			$stmt = $pdo->prepare("SELECT TeamID FROM Team WHERE Name=:name AND LeaderID=:l_id;");
-			$stmt->execute(["name" => $name, "l_id" => $user_id]);
+			$stmt = $pdo->prepare("SELECT TeamID FROM Team WHERE TeamID=:id AND LeaderID=:l_id;");
+			$stmt->execute(["id" => $team_id, "l_id" => $user_id]);
 			$team = $stmt->fetch();
 			if (!$team) {
-				throw new MethodException("Team does not exist");
+				throw new MethodException("Team does not exist or user is not owner");
 			}
 			$team_id = $team['TeamID'];
+
+			$stmt = $pdo->prepare("SELECT COUNT(*) FROM MemberTeam WHERE TeamID=:id;");
+			$stmt->execute(["id" => $team_id]);
+			$count = $stmt->fetch();
+			if (!$count) {
+				throw new MethodException("Team does not meet requirements");
+			}
+			$count = $count['COUNT(*)'];
+			error_log('>> CNT: '. $count);
+
+			$min = $tournament['MinCountTeam'];
+			$max = $tournament['MaxCountTeam'];
+
+			if ($count < $min || $count > $max) {
+				throw new MethodException("Team does not meet requirements");
+			}
 
 			$stmt = $pdo->prepare("SELECT TournamentParticipantID FROM TournamentParticipant WHERE TournamentID=:id AND TeamID=:t_id;");
 			$stmt->execute(["id" => $id, "t_id" => $team_id]);
 			$participant = $stmt->fetch();
 			if ($participant) {
-				throw new MethodException("Already joined");
+				throw new MethodException("Team already joined");
 			}
 
 			$stmt = $pdo->prepare("INSERT INTO TournamentParticipant VALUES (default, :id, NULL, :t_id, 'pending', 0);");
@@ -228,7 +237,7 @@ class TournamentController extends BaseController {
 			$stmt->execute(["id" => $id, "m_id" => $user_id]);
 			$participant = $stmt->fetch();
 			if ($participant) {
-				throw new MethodException("Already joined");
+				throw new MethodException("User already joined");
 			}
 
 			$stmt = $pdo->prepare("INSERT INTO TournamentParticipant VALUES (default, :id, :m_id, NULL, 'pending', 0);");

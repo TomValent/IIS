@@ -4,25 +4,35 @@
 <script>
     const ID = urlParams()['id'];
     function onLoad() {
-        getContent("../index.php/frags/tournament_main?id="+ID, "#content")
+        getContent("../index.php/frags/tournament_main?id="+ID, "#content", {}, () => {
+            getAvailableTeams()
+        })
     }
     $(() => {
         setupModal("#startModal")
         setupModal("#resultModal")
-        setupModal("#participantsModal")
+        setupModal("#detailModal")
         onLoad()
     })
-    function getOwnedTeams() {
+    function getAvailableTeams() {
+        let elem = $('#joinButtonContainer')[0]
         api.get({
-            url: "../api.php/user/owned_teams",
+            url: "../api.php/user/available_teams",
+            data: {id: ID},
             success: (data) => {
-                let teams = ["Select team"].concat(data.teams);
-                sel.html.innerHTML = "";
-                for (const t of teams) {
-                    let option = document.createElement("option");
-                    option.value = t;
-                    option.text = t;
-                    sel.html.appendChild(option);
+                sel.html.innerHTML = ""
+                data.teams.unshift({Name: 'Select team', ID: -1})
+                for (const t of data.teams) {
+                    let option = document.createElement("option")
+                    option.value = t.ID
+                    option.text = t.Name
+                    sel.html.appendChild(option)
+                }
+                if (data.teams.length > 1) {
+                    elem.style.visibility = 'visible'
+                }
+                else {
+                    elem.style.visibility = 'hidden'
                 }
             }
         })
@@ -41,7 +51,7 @@
         sel.html.selectedIndex = 0
         sel.html.style.display = 'none'
     }
-    function showTeamSelect(id, elem) {
+    function showTeamSelect(elem) {
         if (sel.par === elem) {
             return
         }
@@ -51,7 +61,6 @@
         sel.html.style.display = 'inline'
         elem.appendChild(sel.html)
         sel.par = elem
-        sel.id = id
     }
     sel.html.addEventListener(
         'change',
@@ -59,16 +68,15 @@
             if (sel.html.selectedIndex == 0) {
                 return
             }
-            let team_name = sel.html.value
-            console.log('join r: ' + team_name)
+            let team_id = sel.html.value
+            console.log(team_id)
             api.post({
                 url: "../api.php/tournament/join",
                 data: {
-                    id: sel.id,
-                    team_name: team_name
+                    id: ID,
+                    team_id: team_id
                 },
                 success: (data) => {
-                    console.log('team joined')
                     hideTeamSelect()
                     onLoad()
                 },
@@ -82,8 +90,7 @@
     function joinTournament(elem) {
         if (elem)  {
             // team join
-            getOwnedTeams();
-            showTeamSelect(ID, elem)
+            showTeamSelect(elem)
         }
         else {
             // member join
@@ -124,7 +131,6 @@
             console.log('not enough participants')
             return;
         }
-        console.log('pairs: ' + count)
         let pl = new Players
         for (const p of participants) {
             pl.addPlayer(p.name, p.id)
@@ -138,7 +144,6 @@
             div.appendChild(p.html)
         }
         $('#confirmButton').click(() => {
-            console.log('wip')
             let elem = $("#startModalError")[0]
             elem.innerHTML = ''
             let data = [];
@@ -149,19 +154,21 @@
                     'p2': s.p2.selected.id
                 })
             }
-            console.log(data)
             api.post({
                 url: "../api.php/tournament/start_round",
                 data: {'id': ID, 'round': round, 'pairs': data},
-                success: (data) => {
-                    console.log('confirmed')
-                    onLoad()
-                },
+                success: onLoad,
                 error: (message) => {
                     let elem = $("#startModalError")[0]
                     elem.innerHTML = message
                 }
             })
+        })
+        $('#startTimeAllButton').click(() => {
+            let time = $('#startTimeAll')[0].value;
+            for (let p of pairs) {
+                p.date.value = time
+            }
         })
         let elem = $("#startModalError")[0]
         elem.innerHTML = ''
@@ -213,7 +220,7 @@
         constructor(players) {
             this.pl = players
             this.sel = document.createElement('select')
-            this.sel.setAttribute('style', 'display:block')
+            this.sel.setAttribute('class', 'select-light')
             this.selected = {...default_opt}
             this.update(players)
             this.sel.addEventListener(
@@ -284,7 +291,7 @@
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset() + 60)
             this.date.value = now.toISOString().slice(0,16)
             this.html = document.createElement("div")
-            this.html.setAttribute('style', 'display:block; margin: 20px')
+            this.html.setAttribute('class', 'playerSelectBox')
             this.html.appendChild(this.date)
             this.html.appendChild(this.p1.sel)
             this.html.appendChild(this.p2.sel)
@@ -295,7 +302,6 @@
             url: "../api.php/match/get",
             data: {id: id, t_id: ID},
             success: (data) => {
-                console.log(data)
                 let bye = data.isBye
                 $('#resultPointsA')[0].value = data.Points1
                 $('#resultPointsB')[0].value = data.Points2
@@ -376,10 +382,10 @@
             }
         })
     }
-    function viewParticipants() {
-        $("#participants-list")[0].innerHTML = ''
-        getContent("../index.php/frags/tournament_participants?id="+ID, "#participants-list")
-        openModal("#participantsModal")
+    function viewDetails() {
+        $("#detail-content")[0].innerHTML = ''
+        getContent("../index.php/frags/tournament_detail?id="+ID, "#detail-content")
+        openModal("#detailModal")
     }
 </script>
 
@@ -390,7 +396,13 @@
         <p>Match creation</p>
         <div id="startContent">
         </div>
-        <button id="confirmButton">Confirm</button>
+        <div class="confirmContainer">
+            <button id="confirmButton">Confirm</button>
+            <div class="startTimeAllBox">
+                <input type="datetime-local" id="startTimeAll">
+                <button id="startTimeAllButton">Set time for all</button>
+            </div>
+        </div>
         <span id="startModalError" class="error_msg"></span>
     </div>
 </div>
@@ -432,9 +444,9 @@
         <span id="resultModalError" class="error_msg"></span>
     </div>
 </div>
-<div id="participantsModal" class="modal">
+<div id="detailModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <div id="participants-list"></div>
+        <div id="detail-content"></div>
     </div>
 </div>

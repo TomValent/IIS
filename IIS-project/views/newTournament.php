@@ -68,6 +68,7 @@
 		try {
 			$stmt= $pdo->prepare($sql);
 			$stmt->execute($data);
+			pdo_debug($stmt);
 		} catch (Exception $e) {
             error("Error in creating tournament. Please try again");
         }
