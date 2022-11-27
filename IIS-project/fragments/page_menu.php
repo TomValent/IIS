@@ -1,6 +1,6 @@
 <?php
 
-const PAGES = ["/page", "/tournaments", "/tournament", "/newTournament", "/players", "/teams", "/player", "/editAccount"];
+const PAGES = ["/page", "/tournaments", "/tournament", "/newTournament", "/players", "/teams", "/player", "/editAccount", "/newTeam", "/editTeam"];
 
 $user = "(guest)";
 if (isset($_SESSION["login"])) {
@@ -17,6 +17,7 @@ $showLogout = false;
 foreach (PAGES as $page) {
 	if (strpos($_SERVER["HTTP_REFERER"], $page)) {
 		$showLogout = true;
+		break;
 	}
 }
 

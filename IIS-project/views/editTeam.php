@@ -51,7 +51,6 @@ if(!empty($_POST['editTeam'])){
         try {
             $stmt = $pdo->prepare($sql);
             $stmt->execute();
-            header("Location: teams");
 
         } catch (Exception $e) {
             if ($e->getCode() == 23000) {

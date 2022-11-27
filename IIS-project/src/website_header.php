@@ -75,7 +75,7 @@
 
         function logout() {
             api.get({
-                url: <?php echo url("../api.php/user/logout")?>,
+                url: <?php echo url("/api.php/user/logout")?>,
                 success: ()=> {
                     if (typeof onLogout === "function") {
                         onLogout()
