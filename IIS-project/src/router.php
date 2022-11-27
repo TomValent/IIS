@@ -28,7 +28,14 @@ class Router {
 			<?php
 		}
 		// page content
-		require_once $file;
+        try {
+			require_once $file;
+		}
+		catch (Throwable $e) {
+			echo '<script>';
+			echo 'console.error(\'Internal server error: '. $e->getMessage() .'\')';
+			echo '</script>';
+		}
 		// website end
 		if ($wrap) {
 			echo "	</body>";
