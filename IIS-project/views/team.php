@@ -4,7 +4,7 @@
 function error(string $msg): void
 {
     echo "  <div class='right'>
-                   <a href='teams'><button>Go back to teams</button></a>
+                   <a href='team?id=" . $_GET['id'] . "'><button>Go back to team detail</button></a>
              </div>";
     echo $msg;
     exit;
