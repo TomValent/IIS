@@ -58,7 +58,7 @@
 <div class='right'>
 	<?php echo "<button><a href='player?id=". $_SESSION["id"] ."'>Go back to your profile</a></button>";?>
 </div>
-<?php if ($_SESSION["id"] === intval($_GET["id"])): ?>
+<?php if ($_SESSION["id"] == intval($_GET["id"])): ?>
 <div class="row center">
     <div class="column">
         <div class="center"><p>Here you can change your username</p></div>
