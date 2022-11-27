@@ -16,6 +16,9 @@
     })
     function getAvailableTeams() {
         let elem = $('#joinButtonContainer')[0]
+        if (typeof elem === "undefined" || typeof ID === "undefined") {
+            return
+        }
         api.get({
             url: "../api.php/user/available_teams",
             data: {id: ID},
@@ -30,8 +33,7 @@
                 }
                 if (data.teams.length > 1) {
                     elem.style.visibility = 'visible'
-                }
-                else {
+                } else {
                     elem.style.visibility = 'hidden'
                 }
             }
