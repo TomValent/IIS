@@ -88,15 +88,6 @@
                     else window.location.reload()
                 }
             })
-
-            api.get({
-                url: <?php echo url("../api.php/user/logged_user")?>,
-                success: (data)=> {
-                    if (typeof data.username !== "undefined") {
-
-                    }
-                }
-            })
         }
 
         function setupModal(id) {
