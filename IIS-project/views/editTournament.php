@@ -32,14 +32,14 @@
 			error_log("time: ". date('m/d/Y h:i:s a', time()));
 			error_log("start: ". date('m/d/Y h:i:s a', strtotime($_POST['start'])));
 
-			if (!empty($_GET['min']) && !empty($_GET['max'])) {
-				if (intval($_GET["participants"]) <= 0 || intval($_GET["min"]) <= 0 || intval($_GET["max"]) <= 0) {
+			if (!empty($_POST['min']) && !empty($_POST['max'])) {
+				if (intval($_GET["participants"]) <= 0 || intval($_POST["min"]) <= 0 || intval($_POST["max"]) <= 0) {
 					error("Too little participants or team members");
 				}
 			}
 
-			if ($_GET['type'] === "team") {
-				if (intval($_GET["max"] < intval($_GET["min"]))) {
+			if ($_POST['type'] === "team") {
+				if (intval($_POST["max"] < intval($_POST["min"]))) {
 					error("Maximum must be bigger than minimum");
 				}
 			}
