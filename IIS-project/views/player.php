@@ -22,7 +22,7 @@
                                     "left join TournamentParticipant tp on t.TournamentID = tp.TournamentID ".
                                     "left join Team te on te.TeamID = tp.TeamID ".
                                     "left join MemberTeam mt on mt.TeamID = te.TeamID ".
-                                    "where t.type = 'team' and mt.MemberTeamID = :id");
+                                    "where t.type = 'team' and mt.MemberID = :id");
     $q2->execute(["id" => $_GET["id"]]);
     $statsT = $q2->fetchAll(PDO::FETCH_NAMED);
 ?>
