@@ -33,6 +33,8 @@ if (!empty($_GET["id"]) && !empty($_SESSION["id"]) && $_SESSION["id"] == intval(
 	$_GET["edit"] = "true";
 	echo "<div class='right'><button><a href='editAccount?id=". $_GET["id"] ."&edit=true'>Edit account</a></button></div>";
 	echo "<div class='right'><button onclick='deleteMember(" . $_GET["id"] . ")'>Delete account</button></div>";
+} else if (!empty($_GET["id"]) && !empty($_SESSION["isAdmin"])) {
+	echo "<div class='right'><button onclick='deleteMember(" . $_GET["id"] . ")'>Delete account</button></div>";
 }
 ?>
 <div class="center margin" style="margin-top:100px;">Matches stats</div>
