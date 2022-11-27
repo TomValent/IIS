@@ -13,7 +13,14 @@ if (isset($_SESSION["login"])) {
 	 echo "<div class='right'>User: " . $user . "</div>";
 }
 
-if (isset($_SESSION["login"]) && isset($_SERVER["PATH_INFO"]) && in_array($_SERVER["PATH_INFO"], PAGES)) {
+$showLogout = false;
+foreach (PAGES as $page) {
+	if (strpos($_SERVER["HTTP_REFERER"], $page)) {
+		$showLogout = true;
+	}
+}
+
+if (isset($_SESSION["login"]) && isset($_SERVER["HTTP_REFERER"]) && $showLogout) {
 	 echo "  <div class='button_container right'>
 				 <a onclick='logout()'><button>Log out</button></a>
 			 </div>
