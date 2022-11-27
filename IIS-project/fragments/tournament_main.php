@@ -45,7 +45,7 @@ try {
 							echo '<button id="button-next-round" onclick="onNextRound()">Next round</button>';
 						}
 					}
-				} else if ($tournament['ProgressState'] == 'unstarted' && (true /*TODO*/ || count($accepted) >= $tournament['ParticipantCount'])) {
+				} else if ($tournament['ProgressState'] == 'unstarted') {
 					echo '<button onclick="startTournament()">Start tournament</button>';
 				}
 			}

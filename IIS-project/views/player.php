@@ -30,7 +30,7 @@
 
 <span>Profile of <?php echo $user["Name"]; ?></span></br><hr>
 <?php
-if (!empty($_GET["id"]) && $_SESSION["id"] === intval($_GET["id"])) {
+if (!empty($_GET["id"]) && $_SESSION["id"] == intval($_GET["id"])) {
 	$_GET["edit"] = "true";
 	echo "<div class='right'><button><a href='editAccount?id=". $_GET["id"] ."&edit=true'>Edit account</a></button></div>";
 	echo "<div class='right'><button onclick='deleteMember(" . $_GET["id"] . ")'>Delete account</button></div>";

@@ -1,5 +1,5 @@
 <div id="welcome">
-	<h1>Welcome in our page</h1> <!-- TODO  -->
+	<h1>Welcome in our page</h1>
 </div>
 <div class="authenticate">
 	<p>Are you registered?</p>
