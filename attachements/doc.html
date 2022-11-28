@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-2">
+    <title>Projekt IIS</title>
+    <style type="text/css">
+    	table { border-collapse: collapse; }
+    	td, th { border: 1px solid black; padding: 0.3em 0.5em; text-align: left; }
+    	dt { font-weight: bold; margin-top: 0.5em; }
+    </style>
+</head>
+<body>
+
+<!-- Zkontrolujte prosím nastavení kódování v hlavičce dokumentu 
+     podle použitého editoru -->
+
+<h1>Studentské turnaje</h1> <!-- Nahradte názvem svého zadání -->
+
+<dl>
+	<dt>Autoři</dt>
+	<dd>Tomáš Valent <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
+	    <a href="mailto:xvalen27@stud.fit.vutbr.cz">xvalen27@stud.fit.vutbr.cz</a> -
+		Prihlasovanie; registrácia; vytváranie, editátia a mazanie a štartovanie turnajov; uživateľský profil a štatistiky hráča; dokumentácia
+	</dd>
+	<dd>Adam Ruža <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
+	    <a href="mailto:xruzaa00@stud.fit.vutbr.cz">xruzaa00@stud.fit.vutbr.cz</a> -
+		REST API; controllere; implentácia vytvárania zápasov a interné veci okolo priebehu turnaja; routovanie; dark mode; úpravy aby projekt fungoval na Eve
+	</dd>
+  <dd>Magdaléna Bellayová <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
+	    <a href="mailto:xbella01@stud.fit.vutbr.cz">xbella01@stud.fit.vutbr.cz</a> -
+		Vytváranie, mazanie a edtácia tímov; team-controller; prezentačné video; beta testing
+	</dd>
+	<dt>URL aplikace</dt>
+	<dd><a href="https://www.stud.fit.vutbr.cz/~xruzaa00/IIS">https://www.stud.fit.vutbr.cz/~xruzaa00/IIS</a></dd>
+</dl>
+
+<h2>Uživatelé systému pro testování</h2>
+<p>Existujúci zástupci <strong>všetkých rolí užívateľovs</strong>.</p>
+<table>
+<tbody><tr><th>Login</th><th>Heslo</th><th>Role</th></tr>
+<tr><td>admin</td><td>admin</td><td>Administrátor</td></tr>
+<tr><td>test</td><td>12345678</td><td>Bežný užívateľ</td></tr>
+</tbody></table>
+Neregistrovaný užívateľ má vlastnú možnosť prihlásenia sa ako hosť.
+
+<h3>Video</h3>
+
+<a href="https://drive.google.com/drive/folders/1IhxCngXtSdT39fUOsZnF_CDc2zBjZ4_q">Link na video</a>
+
+<h2>Implementace</h2>
+
+	V tomto projekte máme niekoľko controllerov využívajúcich REST API na implementovanie jednotlivých prípadov použitia.
+	<ul>
+		<li>base-controller.php</li>
+		<li>match-controller.php</li>
+		<li>team-controller.php</li>
+		<li>tournament-controller.php</li>
+		<li>user-controller.php</li>
+	</ul>
+	Ako ich názvy vypovedajú, každý obstaráva určitú časť informačného systému a prípady použitia podľa zadania. Base-controller implementuje metódy controlleru a dedia z neho všetky ostatné controllery. Menu vpravo hore je implementované pomocou routera v <i>router.php</i>. V adresári <i>scripts</i> je skript na vytvorenie adminského účtu <b>seed.php</b>.
+	Administrátorské práca sú realizované pomocou bool flagu v tabuľke užívateľov. Medzi neprihlásenými a prihlásenými užívateľmi sa rozlišuje na základe superglobálnej prememennej a jej obsahu. Profil užívateľa je prístupný cez zoznam hráčov a každý prihlásený užívateľ sa vie na svoj profil prekliknúť kliknutím na svoje používateľské meno vpravo hore, kde ho následne vie editovať a zmazať. Pre spravovanie svojich turnajov a tímov sa ukladá v databáze ich zakladateľ/tvorca, ktorý potom zároveň s adminom má právo daný turnaj/tím spravovať.
+<p>
+
+<h3>Databáze</h3>
+
+<img src="relation_scheme.png" alt="relation_scheme.png" width="1200px" height="600px">
+
+<h2>Instalace</h2>
+
+<p>Projekt bol vyvýjaný na verzii PHP 8.1. na OS Linux (Ubuntu, Endeavour). Pre prácu s databázou sme využívali MySQL a balíčky Xampp a PHPMyAdmin.</p>
+<p>V PHPMyAdmin sme si každý vytvorili lokálne databázu a inicializval ju pomocou priloženého SQL skriptu v <i>/attachements</i> v PHPMyAdmin v sekcii SQL. Po vytvorení databáze sa môžeme k nej pripojiť pomocou <b>.env</b>. V zložke <i>/IIS-project</i> sa nachádza štruktúra nášho .env súboru. Ten treba upraviť podľa nasledujúceho popisu. </br>Do <b>MYSQL_DSN</b> pridáme host napr. "127.0.0.1", názov databáze do "dbname" a do port treba ložiť cestu k mysql.sock, napr. /opt/lampp/var/mysql/mysql.sock</br>Ďalej do <b>MYSQL_USER</b> zadáme meno a do <b>MYSQL_PASS</b> heslo na prihlásenie sa do databáze.</p>
+<p>Teraz len stačí v zložke <b>/IIS-project/scripts</b> spustiť skript <b>install.sh</b> na nainštalovanie composera a spustenie php serveru zo správnych zložiek. Teraz je php server spustení a dá sa k nemu pristúpiť takto "http://127.0.0.1:8000". Server sa spúšťa z WWW zložky pomocou <u>php -S 127.0.0.1:8000</u> a ukončuje sa pomocou CTRL+C.</p>
+
+<h2>Známé problémy</h2>
+
+	<ul>
+		<li>Pri zmazaní obidvoch tímov z niektorého zápasu v tabuľke Matches aj v štatistikách zostane záznam, kde obidva tímy sú NULL</li>
+	</ul>
+
+</body></html>
