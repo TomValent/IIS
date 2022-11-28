@@ -1,1 +1,4 @@
+IIS-project/.env
+vendor
 .idea
+/IIS-project/vendor/

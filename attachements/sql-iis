@@ -1,0 +1,82 @@
+CREATE TABLE Member (
+    MemberID INT AUTO_INCREMENT NOT NULL,
+    Name VARCHAR(1024),
+    Login VARCHAR(255) UNIQUE,
+    Password VARCHAR(255),
+    IsAdmin BOOLEAN,
+    PRIMARY KEY (MemberID)
+); 
+
+CREATE TABLE Tournament (
+    TournamentID INT AUTO_INCREMENT NOT NULL,
+    Name VARCHAR(255),
+    CreatorID INT,
+    StartTime DATETIME,
+    Description VARCHAR(1024),
+    Price VARCHAR(255),
+    type ENUM('team','member'),
+    ParticipantCount INT,
+    MaxCountTeam INT,
+    MinCountTeam INT,
+    TotalRounds INT DEFAULT 1,
+    ActualRound INT DEFAULT 0,
+    ApprovalState ENUM('created','approved'),
+    ProgressState ENUM('unstarted','ongoing','finished'),
+    PRIMARY KEY (TournamentID),
+    FOREIGN KEY (CreatorID) REFERENCES Member(MemberID) ON DELETE SET NULL
+);
+
+CREATE TABLE Team (
+    TeamID INT AUTO_INCREMENT NOT NULL,
+    Name VARCHAR(255) UNIQUE,
+    LeaderID INT NOT NULL,
+    Logo VARCHAR(255),
+    Image LONGTEXT,
+    PRIMARY KEY (TeamID),
+    FOREIGN KEY (LeaderID) REFERENCES Member(MemberID) ON DELETE CASCADE
+);
+
+CREATE TABLE MemberTeam (
+    MemberTeamID INT AUTO_INCREMENT NOT NULL,
+    MemberID INT NOT NULL,
+    TeamID INT NOT NULL,
+    PRIMARY KEY (MemberTeamID),
+    FOREIGN KEY (MemberID) REFERENCES Member(MemberID) ON DELETE CASCADE,
+    FOREIGN KEY (TeamID) REFERENCES Team(TeamID) ON DELETE CASCADE
+);
+
+CREATE TABLE TournamentParticipant (
+    TournamentParticipantID INT AUTO_INCREMENT NOT NULL,
+    TournamentID INT NOT NULL,
+    MemberID INT,
+    TeamID INT,
+    AcceptanceState ENUM('pending','approved'),
+    ScoreState INT,
+    PRIMARY KEY (TournamentParticipantID),
+    FOREIGN KEY (TournamentID) REFERENCES Tournament(TournamentID) ON DELETE CASCADE,
+    FOREIGN KEY (MemberID) REFERENCES Member(MemberID) ON DELETE SET NULL,
+    FOREIGN KEY (TeamID) REFERENCES Team(TeamID) ON DELETE SET NULL
+);
+
+CREATE TABLE Matches (
+    MatchID INT AUTO_INCREMENT NOT NULL,
+    TournamentID INT NOT NULL,
+    StartTime DATETIME,
+    Round INT,
+    Points1 INT,
+    Points2 INT,
+    Member1ID INT,
+    Team1ID INT,
+    Member2ID INT,
+    Team2ID INT,
+    isBye BOOLEAN,
+    WinnerMemberID INT DEFAULT NULL,
+    WinnerTeamID INT DEFAULT NULL,
+    PRIMARY KEY (MatchID,TournamentID),
+    FOREIGN KEY (Member1ID) REFERENCES Member(MemberID) ON DELETE SET NULL,
+    FOREIGN KEY (Team1ID) REFERENCES Team(TeamID) ON DELETE SET NULL,
+    FOREIGN KEY (Member2ID) REFERENCES Member(MemberID) ON DELETE SET NULL,
+    FOREIGN KEY (Team2ID) REFERENCES Team(TeamID) ON DELETE SET NULL,
+    FOREIGN KEY (WinnerMemberID ) REFERENCES Member(MemberID) ON DELETE SET NULL,
+    FOREIGN KEY (WinnerTeamID ) REFERENCES Team(TeamID) ON DELETE SET NULL
+);
